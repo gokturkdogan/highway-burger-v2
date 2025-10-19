@@ -1,5 +1,6 @@
 'use client'
 
+import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Image from 'next/image'
@@ -13,14 +14,15 @@ import Link from 'next/link'
 export default function ProductDetailPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
+  const { slug } = use(params)
   const addItem = useCart((state) => state.addItem)
 
   const { data: product, isLoading } = useQuery({
-    queryKey: ['product', params.slug],
+    queryKey: ['product', slug],
     queryFn: async () => {
-      const res = await axios.get(`/api/products/${params.slug}`)
+      const res = await axios.get(`/api/products/${slug}`)
       return res.data
     },
   })

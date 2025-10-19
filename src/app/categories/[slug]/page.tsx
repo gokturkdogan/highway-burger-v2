@@ -1,11 +1,14 @@
 'use client'
 
+import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import ProductCard from '@/components/ProductCard'
 import CategoryList from '@/components/CategoryList'
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
+export default function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params)
+  
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -15,15 +18,15 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
   })
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products', params.slug],
+    queryKey: ['products', slug],
     queryFn: async () => {
-      const res = await axios.get(`/api/products?category=${params.slug}`)
+      const res = await axios.get(`/api/products?category=${slug}`)
       return res.data
     },
   })
 
   const currentCategory = categories?.find(
-    (cat: any) => cat.slug === params.slug
+    (cat: any) => cat.slug === slug
   )
 
   return (
@@ -38,7 +41,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       </div>
 
       {categories && (
-        <CategoryList categories={categories} activeSlug={params.slug} />
+        <CategoryList categories={categories} activeSlug={slug} />
       )}
 
       {isLoading ? (
