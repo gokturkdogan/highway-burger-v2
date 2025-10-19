@@ -47,7 +47,7 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC] pb-20">
+    <div className="min-h-screen bg-gray-100 pb-20">
       {/* Main Content */}
       <div className="px-6 py-6">
         {/* Category Cards - Vue Style Grid */}
@@ -74,12 +74,12 @@ export default function HomePage() {
 
               {/* Content */}
               <div className="mt-14 relative z-10">
-                <h3 className="font-extrabold text-[#2c3e50] text-lg text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
-                  Burgerler
-                </h3>
-                <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-medium group-hover:text-[#5a5a5a] transition-colors duration-300">
-                  110 / 180gr
-                </p>
+                  <h3 className="font-semibold text-[#2c3e50] text-base text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
+                    Burgerler
+                  </h3>
+                  <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-normal group-hover:text-[#5a5a5a] transition-colors duration-300">
+                    110 / 180gr
+                  </p>
                 
                 {/* Action Button */}
                 <div className="flex justify-between items-center text-xs font-bold px-4 py-3 bg-gradient-to-r from-[#bb7c05]/12 to-[#d49624]/8 rounded-full text-[#bb7c05] transition-all duration-400 group-hover:bg-gradient-to-r group-hover:from-[#bb7c05] group-hover:via-[#d49624] group-hover:to-[#bb7c05] group-hover:text-white group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg border border-[#bb7c05]/15 relative overflow-hidden">
@@ -109,12 +109,12 @@ export default function HomePage() {
               </div>
 
               <div className="mt-14 relative z-10">
-                <h3 className="font-extrabold text-[#2c3e50] text-lg text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
-                  Tostlar
-                </h3>
-                <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-medium group-hover:text-[#5a5a5a] transition-colors duration-300">
-                  Patates & İçecek + 80₺
-                </p>
+                  <h3 className="font-semibold text-[#2c3e50] text-base text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
+                    Tostlar
+                  </h3>
+                  <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-normal group-hover:text-[#5a5a5a] transition-colors duration-300">
+                    Patates & İçecek + 80₺
+                  </p>
                 
                 <div className="flex justify-between items-center text-xs font-bold px-4 py-3 bg-gradient-to-r from-[#bb7c05]/12 to-[#d49624]/8 rounded-full text-[#bb7c05] transition-all duration-400 group-hover:bg-gradient-to-r group-hover:from-[#bb7c05] group-hover:via-[#d49624] group-hover:to-[#bb7c05] group-hover:text-white group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg border border-[#bb7c05]/15 relative overflow-hidden">
                   <span className="tracking-wide">Seçim için tıklayınız</span>
@@ -143,12 +143,12 @@ export default function HomePage() {
               </div>
 
               <div className="mt-14 relative z-10">
-                <h3 className="font-extrabold text-[#2c3e50] text-lg text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
-                  Sıcak Sandviçler
-                </h3>
-                <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-medium group-hover:text-[#5a5a5a] transition-colors duration-300">
-                  Sosisli & Patso
-                </p>
+                  <h3 className="font-semibold text-[#2c3e50] text-base text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
+                    Sıcak Sandviçler
+                  </h3>
+                  <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-normal group-hover:text-[#5a5a5a] transition-colors duration-300">
+                    Sosisli & Patso
+                  </p>
                 
                 <div className="flex justify-between items-center text-xs font-bold px-4 py-3 bg-gradient-to-r from-[#bb7c05]/12 to-[#d49624]/8 rounded-full text-[#bb7c05] transition-all duration-400 group-hover:bg-gradient-to-r group-hover:from-[#bb7c05] group-hover:via-[#d49624] group-hover:to-[#bb7c05] group-hover:text-white group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg border border-[#bb7c05]/15 relative overflow-hidden">
                   <span className="tracking-wide">Seçim için tıklayınız</span>
@@ -177,12 +177,12 @@ export default function HomePage() {
               </div>
 
               <div className="mt-14 relative z-10">
-                <h3 className="font-extrabold text-[#2c3e50] text-lg text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
-                  İçecekler
-                </h3>
-                <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-medium group-hover:text-[#5a5a5a] transition-colors duration-300">
-                  Soğuk İçecekler
-                </p>
+                  <h3 className="font-semibold text-[#2c3e50] text-base text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
+                    İçecekler
+                  </h3>
+                  <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-normal group-hover:text-[#5a5a5a] transition-colors duration-300">
+                    Soğuk İçecekler
+                  </p>
                 
                 <div className="flex justify-between items-center text-xs font-bold px-4 py-3 bg-gradient-to-r from-[#bb7c05]/12 to-[#d49624]/8 rounded-full text-[#bb7c05] transition-all duration-400 group-hover:bg-gradient-to-r group-hover:from-[#bb7c05] group-hover:via-[#d49624] group-hover:to-[#bb7c05] group-hover:text-white group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg border border-[#bb7c05]/15 relative overflow-hidden">
                   <span className="tracking-wide">Seçim için tıklayınız</span>
@@ -211,12 +211,12 @@ export default function HomePage() {
               </div>
 
               <div className="mt-14 relative z-10">
-                <h3 className="font-extrabold text-[#2c3e50] text-lg text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
-                  Menüler
-                </h3>
-                <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-medium group-hover:text-[#5a5a5a] transition-colors duration-300">
-                  Patates + Kutu İçecek
-                </p>
+                  <h3 className="font-semibold text-[#2c3e50] text-base text-center mb-1.5 leading-tight transition-all duration-400 group-hover:text-[#bb7c05] group-hover:-translate-y-1 group-hover:tracking-wide">
+                    Menüler
+                  </h3>
+                  <p className="text-[#7a7a7a] text-xs text-center mt-1 mb-4 leading-relaxed font-normal group-hover:text-[#5a5a5a] transition-colors duration-300">
+                    Patates + Kutu İçecek
+                  </p>
                 
                 <div className="flex justify-between items-center text-xs font-bold px-4 py-3 bg-gradient-to-r from-[#bb7c05]/12 to-[#d49624]/8 rounded-full text-[#bb7c05] transition-all duration-400 group-hover:bg-gradient-to-r group-hover:from-[#bb7c05] group-hover:via-[#d49624] group-hover:to-[#bb7c05] group-hover:text-white group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg border border-[#bb7c05]/15 relative overflow-hidden">
                   <span className="tracking-wide">Seçim için tıklayınız</span>

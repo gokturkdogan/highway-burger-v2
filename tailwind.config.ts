@@ -50,9 +50,11 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['var(--font-inter)'],
-        display: ['Poppins', 'var(--font-inter)'],
-        heading: ['Montserrat', 'var(--font-inter)'],
+        sans: ['var(--font-varela-round)', 'var(--font-inter)'],
+        varela: ['var(--font-varela-round)'],
+        kanit: ['var(--font-kanit)'],
+        display: ['var(--font-varela-round)', 'Poppins', 'var(--font-inter)'],
+        heading: ['var(--font-varela-round)', 'Montserrat', 'var(--font-inter)'],
       },
       animation: {
         'border-pulse': 'border-pulse 2s ease-in-out infinite',

@@ -46,10 +46,10 @@ export default function BottomNavigation() {
 
       {/* Center - Cart */}
       <Link href="/cart" className="relative">
-        <div className={`flex justify-center items-center bg-[#bb7c05] rounded-full w-16 h-16 absolute -top-8 left-1/2 transform -translate-x-1/2 shadow-lg border-2 border-white transition-all duration-400 ${mounted && itemCount > 0 ? 'hover:-translate-y-1 hover:scale-110' : 'hover:-translate-y-1 hover:scale-110'}`}>
-          <ShoppingCart className="w-8 h-8 text-white" />
+        <div className={`flex justify-center items-center bg-[#bb7c05] rounded-full w-20 h-20 absolute -top-14 left-1/2 transform -translate-x-1/2 shadow-2xl border-3 border-white transition-all duration-400 ${mounted && itemCount > 0 ? 'hover:-translate-y-2 hover:scale-110' : 'hover:-translate-y-2 hover:scale-110'}`} style={{boxShadow: '0 12px 40px rgba(187, 124, 5, 0.45), 0 6px 20px rgba(0, 0, 0, 0.25)'}}>
+          <ShoppingCart className="w-12 h-12 text-white" />
           {mounted && itemCount > 0 && (
-            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-extrabold w-6 h-6 rounded-full flex items-center justify-center border-3 border-white">
               {itemCount}
             </div>
           )}

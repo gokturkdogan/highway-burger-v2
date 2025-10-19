@@ -1,20 +1,30 @@
 import type { Metadata } from 'next'
-import { Inter, Poppins, Montserrat } from 'next/font/google'
+import { Inter, Poppins, Montserrat, Kanit, Varela_Round } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const poppins = Poppins({ 
-  subsets: ['latin'], 
+const poppins = Poppins({
+  subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-poppins' 
+  variable: '--font-poppins'
 })
-const montserrat = Montserrat({ 
-  subsets: ['latin'], 
+const montserrat = Montserrat({
+  subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-montserrat' 
+  variable: '--font-montserrat'
+})
+const kanit = Kanit({
+  subsets: ['latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-kanit'
+})
+const varelaRound = Varela_Round({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-varela-round'
 })
 
 export const metadata: Metadata = {
@@ -28,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${poppins.variable} ${montserrat.variable}`}>
+    <html lang="tr" className={`${inter.variable} ${poppins.variable} ${montserrat.variable} ${kanit.variable} ${varelaRound.variable}`}>
       <body>
         <Providers>
           <div className="flex min-h-screen flex-col">
