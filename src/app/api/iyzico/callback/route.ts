@@ -98,12 +98,16 @@ export async function POST(request: NextRequest) {
         });
       }
       
+      // Ödeme başarılı, sadece paymentStatus'u güncelle
       await prisma.order.update({
         where: { id: orderId },
-        data: { status: 'confirmed' },
+        data: { 
+          paymentStatus: 'paid',  // Ödeme durumunu güncelle
+          // status 'received' olarak kalır, admin panelden değiştirilir
+        },
       });
 
-      console.log("✅ Order confirmed:", orderId);
+      console.log("✅ Payment confirmed for order:", orderId);
       console.log("=== iyzico Callback Completed Successfully ===");
       
       return new Response(null, {

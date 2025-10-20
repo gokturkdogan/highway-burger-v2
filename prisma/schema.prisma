@@ -50,25 +50,36 @@ model Coupon {
 }
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  userId        Int?
-  total         Float
-  discount      Float       @default(0)
-  status        String      @default("pending")
-  paymentMethod String?     // Kapıda Nakit, Kapıda Kredi Kartı, Online Kredi Kartı
-  createdAt     DateTime    @default(now())
-  user          User?       @relation(fields: [userId], references: [id])
-  items         OrderItem[]
+  id              Int         @id @default(autoincrement())
+  userId          Int?
+  total           Float
+  discount        Float       @default(0)
+  status          String      @default("received")      // received, preparing, on_the_way, delivered, cancelled
+  paymentStatus   String      @default("pending")      // pending, paid, failed
+  paymentMethod   String?                              // Kapıda Nakit, Kapıda Kredi Kartı, Online Kredi Kartı
+  // Teslimat Adresi Bilgileri
+  deliveryName     String?
+  deliveryPhone    String?
+  deliveryCity     String?
+  deliveryDistrict String?
+  deliveryAddress  String?
+  deliveryLatitude Float?     // Harita koordinatı
+  deliveryLongitude Float?    // Harita koordinatı
+  createdAt        DateTime   @default(now())
+  user             User?      @relation(fields: [userId], references: [id])
+  items            OrderItem[]
 }
 
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  price     Float
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  id             Int     @id @default(autoincrement())
+  orderId        Int
+  productId      Int
+  quantity       Int
+  price          Float
+  selectedOption String? // first veya second (hangi fiyat seçildi)
+  extraText      String? // 110gr/180gr gibi bilgi
+  order          Order   @relation(fields: [orderId], references: [id])
+  product        Product @relation(fields: [productId], references: [id])
 }
 
 model Address {

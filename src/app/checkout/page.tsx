@@ -35,6 +35,7 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false)
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<string>('')
+  const [showPaymentError, setShowPaymentError] = useState(false)
   const paymentMethodRef = useRef<HTMLDivElement>(null)
 
   const items = useCart((state) => state.items)
@@ -108,11 +109,14 @@ export default function CheckoutPage() {
     }
     if (!paymentMethod) {
       toast.warning('Lütfen bir ödeme yöntemi seçin', 3000)
-      // Ödeme yöntemi seçimine scroll
+      // Ödeme yöntemi seçimine scroll ve error göster
+      setShowPaymentError(true)
       paymentMethodRef.current?.scrollIntoView({ 
         behavior: 'smooth', 
         block: 'center' 
       })
+      // 3 saniye sonra error'u kaldır
+      setTimeout(() => setShowPaymentError(false), 3000)
       return
     }
 
@@ -124,8 +128,9 @@ export default function CheckoutPage() {
         // Sipariş oluştur
         const order = await axios.post('/api/orders', {
           total: getTotalWithDiscount(),
-          status: 'pending',
           paymentMethod: paymentMethod === 'cash' ? 'Kapıda Nakit' : 'Kapıda Kredi Kartı',
+          address: deliveryAddress,
+          items: items,
         })
 
         toast.success('Sipariş başarıyla oluşturuldu!', 3000)
@@ -144,8 +149,9 @@ export default function CheckoutPage() {
       // Sipariş oluştur
       const order = await axios.post('/api/orders', {
         total: getTotalWithDiscount(),
-        status: 'pending',
         paymentMethod: 'Online Kredi Kartı',
+        address: deliveryAddress,
+        items: items,
       })
 
       const orderId = order.data.id
@@ -432,13 +438,25 @@ export default function CheckoutPage() {
             )}
 
             {/* Payment Method Selection */}
-            <div ref={paymentMethodRef}>
-              <h2 className="text-lg font-bold text-[#2c3e50] mb-4">Ödeme Yöntemi</h2>
+            <div 
+              ref={paymentMethodRef}
+              className={`transition-all duration-500 ${
+                showPaymentError ? 'ring-4 ring-red-400 ring-opacity-50 rounded-2xl p-4 -m-4' : ''
+              }`}
+            >
+              <h2 className={`text-lg font-bold mb-4 transition-colors duration-300 ${
+                showPaymentError ? 'text-red-600' : 'text-[#2c3e50]'
+              }`}>
+                Ödeme Yöntemi {showPaymentError && <span className="text-red-500 animate-pulse">*</span>}
+              </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Kapıda Nakit */}
               <button
-                onClick={() => setPaymentMethod('cash')}
+                onClick={() => {
+                  setPaymentMethod('cash')
+                  setShowPaymentError(false)
+                }}
                 className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
                   paymentMethod === 'cash'
                     ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
@@ -464,7 +482,10 @@ export default function CheckoutPage() {
 
               {/* Kapıda Kredi Kartı */}
               <button
-                onClick={() => setPaymentMethod('card-on-delivery')}
+                onClick={() => {
+                  setPaymentMethod('card-on-delivery')
+                  setShowPaymentError(false)
+                }}
                 className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
                   paymentMethod === 'card-on-delivery'
                     ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
@@ -490,7 +511,10 @@ export default function CheckoutPage() {
 
               {/* Online Kredi Kartı */}
               <button
-                onClick={() => setPaymentMethod('online')}
+                onClick={() => {
+                  setPaymentMethod('online')
+                  setShowPaymentError(false)
+                }}
                 className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
                   paymentMethod === 'online'
                     ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
