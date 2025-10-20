@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String?
-  email        String   @unique
+  email        String    @unique
   passwordHash String
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
   orders       Order[]
+  addresses    Address[]
 }
 
 model Category {
@@ -67,4 +68,18 @@ model OrderItem {
   price     Float
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String   // Ev, İş, vb.
+  fullName    String
+  phone       String
+  city        String
+  district    String
+  fullAddress String
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
