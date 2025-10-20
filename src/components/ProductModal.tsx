@@ -28,12 +28,11 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
   const addItem = useCart((state) => state.addItem)
   const toast = useToast()
 
-  // Modal açıldığında body scroll'u kapat ve açılış animasyonu başlat
+  // Modal açıldığında body scroll'u kapat
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
-      // Küçük bir delay ile animasyonu tetikle
-      setTimeout(() => setIsAnimating(true), 10)
+      setIsAnimating(true)
     } else {
       document.body.style.overflow = 'unset'
       setIsAnimating(false)
@@ -136,28 +135,27 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
                   alt={product.name}
                   width={300}
                   height={300}
-                  className="object-contain drop-shadow-2xl animate-fadeIn"
-                  style={{ animationDelay: '0.1s' }}
+                  className="object-contain drop-shadow-2xl"
                 />
               </div>
               {/* Decorative Elements */}
-              <div className="absolute top-4 right-4 w-20 h-20 bg-[#bb7c05]/10 rounded-full blur-2xl animate-pulse"></div>
-              <div className="absolute bottom-4 left-4 w-16 h-16 bg-[#d49624]/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute top-4 right-4 w-20 h-20 bg-[#bb7c05]/10 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-4 left-4 w-16 h-16 bg-[#d49624]/10 rounded-full blur-2xl"></div>
             </div>
 
             {/* Product Info */}
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-[#2c3e50] mb-3 animate-fadeIn" style={{animationDelay: '0.2s'}}>
+              <h2 className="text-2xl font-bold text-[#2c3e50] mb-3">
                 {product.name}
               </h2>
-              <p className="text-gray-600 leading-relaxed animate-fadeIn" style={{animationDelay: '0.3s'}}>
+              <p className="text-gray-600 leading-relaxed">
                 {product.description}
               </p>
             </div>
 
             {/* Price Options */}
             {product.secondPrice && (
-              <div className="mb-6 animate-fadeIn" style={{animationDelay: '0.4s'}}>
+              <div className="mb-6">
                 <label className="block text-sm font-semibold text-[#2c3e50] mb-3">
                   Seçenek Seçin
                 </label>
@@ -218,7 +216,7 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
             )}
 
             {/* Quantity Selector */}
-            <div className="mb-6 animate-fadeIn" style={{animationDelay: '0.5s'}}>
+            <div className="mb-6">
               <label className="block text-sm font-semibold text-[#2c3e50] mb-3">
                 Adet
               </label>
@@ -245,8 +243,7 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              className="w-full bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white px-4 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] animate-fadeIn"
-              style={{animationDelay: '0.6s'}}
+              className="w-full bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white px-4 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
               <ShoppingCart className="w-6 h-6" />
               <span>Sepete Ekle</span>
