@@ -30,7 +30,7 @@ export default function BottomNavigation() {
   }
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 animate-slideUp">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] animate-slideUp">
       {/* Glassmorphism Background */}
       <div className="relative bg-white/80 backdrop-blur-xl border-t border-gray-200/50" style={{boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.12), 0 -4px 15px rgba(187, 124, 5, 0.1)'}}>
         {/* Animated Top Border */}
@@ -90,7 +90,7 @@ export default function BottomNavigation() {
           </div>
 
           {/* Center - Cart */}
-          <Link href="/cart" className="relative group">
+          <Link href="/cart" className="relative group z-[101]">
             <div className="flex justify-center items-center bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-full w-20 h-20 absolute -top-14 left-1/2 transform -translate-x-1/2 border-4 border-white transition-all duration-400 group-hover:-translate-y-2 group-hover:scale-110 group-hover:rotate-6" style={{boxShadow: '0 12px 40px rgba(187, 124, 5, 0.45), 0 6px 20px rgba(0, 0, 0, 0.25)'}}>
               <ShoppingCart className="w-10 h-10 text-white transition-transform group-hover:scale-110" />
               {mounted && itemCount > 0 && (

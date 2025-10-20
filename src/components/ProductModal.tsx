@@ -3,6 +3,8 @@
 import { X, ShoppingCart, Minus, Plus } from 'lucide-react'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { useCart } from '@/hooks/useCart'
+import { useToast } from '@/contexts/ToastContext'
 
 interface ProductModalProps {
   isOpen: boolean
@@ -23,6 +25,8 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
   const [quantity, setQuantity] = useState(1)
   const [isClosing, setIsClosing] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const addItem = useCart((state) => state.addItem)
+  const toast = useToast()
 
   // Modal açıldığında body scroll'u kapat ve açılış animasyonu başlat
   useEffect(() => {
@@ -70,14 +74,28 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
   }
 
   const handleAddToCart = () => {
-    // TODO: Sepete ekleme fonksiyonu buraya gelecek
-    console.log('Sepete eklendi:', {
-      product,
-      selectedPrice,
-      quantity,
-      totalPrice: getTotalPrice()
-    })
+    // Her bir adet için ayrı ayrı ekle (quantity kadar)
+    for (let i = 0; i < quantity; i++) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: getCurrentPrice(),
+        imageUrl: product.imageUrl,
+        slug: `${product.id}`, // Slug olarak id kullan (gerekirse düzenlenebilir)
+        selectedOption: selectedPrice,
+        extraText: product.extraText,
+      })
+    }
+    
+    // Toast göster
+    toast.success(`${quantity} adet ${product.name} sepete eklendi!`, 2500)
+    
+    // Modal'ı kapat
     handleClose()
+    
+    // Form'u resetle
+    setQuantity(1)
+    setSelectedPrice('first')
   }
 
   return (

@@ -8,6 +8,8 @@ export interface CartItem {
   imageUrl: string | null
   quantity: number
   slug: string
+  selectedOption?: 'first' | 'second' // Hangi fiyat seçildi
+  extraText?: string | null // 110gr/180gr gibi
 }
 
 interface CartStore {
@@ -34,12 +36,17 @@ export const useCart = create<CartStore>()(
 
       addItem: (item) => {
         set((state) => {
-          const existingItem = state.items.find((i) => i.id === item.id)
+          // Aynı ürün ve aynı seçenek varsa quantity artır
+          const existingItem = state.items.find(
+            (i) => i.id === item.id && i.selectedOption === item.selectedOption
+          )
           
           if (existingItem) {
             return {
               items: state.items.map((i) =>
-                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                i.id === item.id && i.selectedOption === item.selectedOption
+                  ? { ...i, quantity: i.quantity + 1 }
+                  : i
               ),
             }
           }
