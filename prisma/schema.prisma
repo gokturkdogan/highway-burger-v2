@@ -20,6 +20,7 @@ model Category {
   id        Int       @id @default(autoincrement())
   name      String
   slug      String    @unique
+  image     String?
   createdAt DateTime  @default(now())
   products  Product[]
 }

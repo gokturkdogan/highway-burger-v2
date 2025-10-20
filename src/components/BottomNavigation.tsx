@@ -22,7 +22,7 @@ export default function BottomNavigation() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 flex justify-between items-center px-5 py-3 bg-white shadow-2xl z-50 animate-slideUp" style={{boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.12), 0 -4px 15px rgba(187, 124, 5, 0.1)'}}>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 flex justify-between items-center px-5 py-3 bg-white shadow-2xl z-50 animate-slideUp" style={{boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.12), 0 -4px 15px rgba(187, 124, 5, 0.1)'}}>
       {/* Shimmer Effect */}
       <div className="absolute -top-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#bb7c05]/30 to-transparent animate-shimmer"></div>
       

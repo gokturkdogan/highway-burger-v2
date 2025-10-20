@@ -3,19 +3,27 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { User, LogIn, UserPlus, X } from 'lucide-react'
+import { User, LogIn, UserPlus, X, ShoppingCart, Home, Utensils, Sandwich, Coffee, BookOpen } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const { data: session } = useSession()
   const itemCount = useCart((state) => state.getItemCount())
   const [mounted, setMounted] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const isActive = (path: string) => {
+    if (path === '/' && pathname === '/') return true
+    if (path !== '/' && pathname.includes(path)) return true
+    return false
+  }
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
@@ -30,9 +38,9 @@ export default function Header() {
       <header className="sticky top-0 z-50 w-full">
         {/* Main Header - Single White Div */}
         <div className="bg-white px-6 py-4 shadow-lg">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
             {/* Left - Logo */}
-            <div>
+            <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/images/logo/splash.png"
                 alt="Highway Burger Logo"
@@ -41,10 +49,14 @@ export default function Header() {
                 className="object-contain"
                 priority
               />
-            </div>
+              <h1 className="hidden md:block text-lg font-display font-semibold text-[#bb7c05] tracking-wide relative">
+                HIGHWAY BURGER
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-0.5 bg-[#bb7c05] rounded-full animate-border-pulse w-full"></div>
+              </h1>
+            </Link>
 
-            {/* Center - Title */}
-            <div className="relative">
+            {/* Center - Title (Mobile) */}
+            <div className="md:hidden relative">
               <h1 className="text-lg font-display font-semibold text-[#bb7c05] tracking-wide">
                 HIGHWAY BURGER
               </h1>
@@ -52,8 +64,49 @@ export default function Header() {
               <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 h-0.5 bg-[#bb7c05] rounded-full animate-border-pulse"></div>
             </div>
 
-            {/* Right - User Icon */}
-            <div>
+            {/* Center - Navigation (Desktop) */}
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/" className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive('/') ? 'text-[#bb7c05]' : 'text-gray-600 hover:text-[#bb7c05]'}`}>
+                <Home className="w-5 h-5" />
+                <span className="text-xs font-medium">Ana Sayfa</span>
+              </Link>
+              <Link href="/categories/burgers" className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive('/categories/burgers') ? 'text-[#bb7c05]' : 'text-gray-600 hover:text-[#bb7c05]'}`}>
+                <Utensils className="w-5 h-5" />
+                <span className="text-xs font-medium">Burgerler</span>
+              </Link>
+              <Link href="/categories/toast" className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive('/categories/toast') ? 'text-[#bb7c05]' : 'text-gray-600 hover:text-[#bb7c05]'}`}>
+                <Sandwich className="w-5 h-5" />
+                <span className="text-xs font-medium">Tostlar</span>
+              </Link>
+              <Link href="/categories/sandwiches" className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive('/categories/sandwiches') ? 'text-[#bb7c05]' : 'text-gray-600 hover:text-[#bb7c05]'}`}>
+                <Utensils className="w-5 h-5" />
+                <span className="text-xs font-medium">Sandviçler</span>
+              </Link>
+              <Link href="/categories/menus" className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive('/categories/menus') ? 'text-[#bb7c05]' : 'text-gray-600 hover:text-[#bb7c05]'}`}>
+                <BookOpen className="w-5 h-5" />
+                <span className="text-xs font-medium">Menüler</span>
+              </Link>
+              <Link href="/categories/drinks" className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive('/categories/drinks') ? 'text-[#bb7c05]' : 'text-gray-600 hover:text-[#bb7c05]'}`}>
+                <Coffee className="w-5 h-5" />
+                <span className="text-xs font-medium">İçecekler</span>
+              </Link>
+            </nav>
+
+            {/* Right - Cart & User Icon */}
+            <div className="flex items-center gap-3">
+              {/* Cart Icon (Desktop) */}
+              <Link href="/cart" className="hidden md:flex relative">
+                <button className="w-12 h-12 border-2 border-[#bb7c05] rounded-full flex items-center justify-center hover:bg-[#bb7c05]/10 transition-colors animate-glow">
+                  <ShoppingCart className="h-6 w-6 text-[#bb7c05]" />
+                  {mounted && itemCount > 0 && (
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+                      {itemCount}
+                    </div>
+                  )}
+                </button>
+              </Link>
+
+              {/* User Icon */}
               <button
                 onClick={toggleSidebar}
                 className="w-12 h-12 border-2 border-[#bb7c05] rounded-full flex items-center justify-center hover:bg-[#bb7c05]/10 transition-colors animate-glow"
