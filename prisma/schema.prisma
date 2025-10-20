@@ -26,16 +26,18 @@ model Category {
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
-  name        String
-  slug        String      @unique
-  description String
-  price       Float
-  imageUrl    String?
-  categoryId  Int
-  createdAt   DateTime    @default(now())
-  orderItems  OrderItem[]
-  category    Category    @relation(fields: [categoryId], references: [id])
+  id           Int         @id @default(autoincrement())
+  name         String
+  slug         String      @unique
+  description  String
+  price        Float
+  secondPrice  Float?      // Ekstra seçenek fiyatı (opsiyonel)
+  extraText    String?     // Ekstra açıklama (110/180gr, +patates vb.)
+  imageUrl     String?
+  categoryId   Int
+  createdAt    DateTime    @default(now())
+  orderItems   OrderItem[]
+  category     Category    @relation(fields: [categoryId], references: [id])
 }
 
 model Coupon {

@@ -118,7 +118,7 @@ export default function HomePage() {
             ))
           ) : (
             // Category cards
-            categoryCards.map((category) => {
+            categoryCards.map((category: any) => {
               // Icon mapping
               const getCategoryIcon = (slug: string) => {
                 switch (slug) {

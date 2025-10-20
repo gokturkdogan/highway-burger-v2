@@ -53,6 +53,105 @@ async function main() {
   ])
 
   console.log('Kategoriler oluşturuldu:', categories.map(c => c.name))
+
+  // Örnek ürünler oluştur
+  const products = await Promise.all([
+    // Burgerler
+    prisma.product.upsert({
+      where: { slug: 'klasik-burger' },
+      update: {
+        secondPrice: 55, // 180gr için
+        extraText: '110/180gr',
+      },
+      create: {
+        name: 'Klasik Burger',
+        slug: 'klasik-burger',
+        description: 'Taze et, marul, domates ve özel sos ile',
+        price: 45,
+        secondPrice: 55, // 180gr için
+        extraText: '110/180gr',
+        imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
+        categoryId: categories[0].id // burgers
+      },
+    }),
+    prisma.product.upsert({
+      where: { slug: 'cheese-burger' },
+      update: {
+        secondPrice: 65, // 180gr için
+        extraText: '110/180gr',
+      },
+      create: {
+        name: 'Cheese Burger',
+        slug: 'cheese-burger',
+        description: 'Çift peynirli nefis burger',
+        price: 55,
+        secondPrice: 65, // 180gr için
+        extraText: '110/180gr',
+        imageUrl: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400',
+        categoryId: categories[0].id // burgers
+      },
+    }),
+    
+    // Sandviçler
+    prisma.product.upsert({
+      where: { slug: 'klasik-sandvic' },
+      update: {},
+      create: {
+        name: 'Klasik Sandviç',
+        slug: 'klasik-sandvic',
+        description: 'Tavuk, marul, domates ile',
+        price: 35,
+        secondPrice: 45, // +patates için
+        extraText: '+ Patates',
+        imageUrl: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400',
+        categoryId: categories[2].id // sandwiches
+      },
+    }),
+    prisma.product.upsert({
+      where: { slug: 'tavuk-sandvic' },
+      update: {},
+      create: {
+        name: 'Tavuk Sandviç',
+        slug: 'tavuk-sandvic',
+        description: 'Izgara tavuk göğsü ile',
+        price: 40,
+        secondPrice: 50, // +patates için
+        extraText: '+ Patates',
+        imageUrl: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400',
+        categoryId: categories[2].id // sandwiches
+      },
+    }),
+
+    // Tostlar
+    prisma.product.upsert({
+      where: { slug: 'klasik-tost' },
+      update: {},
+      create: {
+        name: 'Klasik Tost',
+        slug: 'klasik-tost',
+        description: 'Peynir ve domates ile',
+        price: 25,
+        imageUrl: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400',
+        categoryId: categories[1].id // toast
+      },
+    }),
+
+    // İçecekler
+    prisma.product.upsert({
+      where: { slug: 'kola' },
+      update: {},
+      create: {
+        name: 'Kola',
+        slug: 'kola',
+        description: 'Soğuk kola',
+        price: 15,
+        imageUrl: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400',
+        categoryId: categories[3].id // drinks
+      },
+    }),
+  ])
+
+  console.log('Ürünler oluşturuldu:', products.map(p => p.name))
 }
 
 main()

@@ -4,6 +4,7 @@ import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Image from 'next/image'
+import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
 
 export default function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -53,7 +54,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         display: 'flex',
         flexDirection: 'column',
         gap: '14px',
-        padding: '0 20px 0 50px',
+        padding: '0 20px 0 60px',
         animation: 'fadeIn 0.6s ease-out'
       }}>
         {isLoading ? (
@@ -75,7 +76,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
               <div className="h-8 bg-gray-200 rounded-full"></div>
             </div>
           ))
-        ) : (
+        ) : displayProducts && displayProducts.length > 0 ? (
           // Product items
           displayProducts.map((product: any) => (
             <div
@@ -128,19 +129,21 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
               {/* Product Image */}
               <div style={{
                 width: '115px',
+                height: '115px',
                 position: 'absolute',
                 top: '50%',
                 left: 0,
-                transform: 'translate(-50%, -50%) scale(1.15) rotate(-3deg)',
+                transform: 'translate(-50%, -50%) rotate(-3deg)',
                 transition: 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)',
                 zIndex: 1
               }}>
                 <Image
-                  src={product.image || "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400"}
+                  src={product.imageUrl || "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400"}
                   alt={product.name}
                   width={115}
                   height={115}
                   className="object-contain"
+                  style={{ width: '115px', height: '115px' }}
                 />
               </div>
 
@@ -159,7 +162,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                   fontWeight: 700,
                   letterSpacing: '0.8px',
                   color: '#bb7c05',
-                  fontSize: '15px',
+                  fontSize: '13px',
                   transition: 'all 0.35s ease',
                   lineHeight: 1.3
                 }}>
@@ -168,7 +171,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 
                 <div className="nav__subtitle" style={{
                   color: '#7a7a7a',
-                  fontSize: '12px',
+                  fontSize: '10px',
                   lineHeight: 1.5,
                   maxWidth: '85%',
                   fontWeight: 500,
@@ -186,26 +189,32 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                   <div className="nav__price" style={{
                     color: '#bb7c05',
                     fontWeight: 800,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     letterSpacing: '0.3px',
                     transition: 'all 0.35s ease',
                     transform: 'translateY(-2px)'
                   }}>
-                    {product.price}
-                    {product.secondPrice && <span style={{fontWeight: 700}}>/{product.secondPrice}</span>}₺
+                    {product.price}₺
+                    {product.secondPrice && (
+                      <span style={{fontWeight: 800}}>
+                        /{product.secondPrice}₺
+                      </span>
+                    )}
                   </div>
                   
-                  {product.extra && (
+                  {product.extraText && (
                     <span className="nav__suffix" style={{
-                      color: '#8a8a8a',
-                      fontSize: '11px',
+                      color: '#8a7a5a',
+                      fontSize: '9px',
                       fontWeight: 600,
-                      padding: '3px 8px',
+                      padding: '2px 6px',
                       background: 'rgba(187, 124, 5, 0.08)',
                       borderRadius: '8px',
-                      letterSpacing: '0.3px'
+                      letterSpacing: '0.2px',
+                      border: '1px solid rgba(187, 124, 5, 0.15)',
+                      textTransform: 'lowercase'
                     }}>
-                      {product.extra}
+                      {product.extraText}
                     </span>
                   )}
                 </div>
@@ -221,11 +230,11 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 zIndex: 2
               }}>
                 <div className="nav__actionIcon" style={{
-                  width: '38px',
-                  height: '38px',
+                  width: '44px',
+                  height: '44px',
                   background: 'linear-gradient(135deg, #bb7c05 0%, #d49624 100%)',
                   borderRadius: '50%',
-                  padding: '9px',
+                  padding: '10px',
                   boxShadow: '0 4px 15px rgba(187, 124, 5, 0.55), 0 2px 8px rgba(187, 124, 5, 0.4)',
                   transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
                   border: '2px solid rgba(255, 255, 255, 0.3)',
@@ -233,11 +242,51 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  <ShoppingCart className="w-5 h-5 text-white" />
+                  <ShoppingCart className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
           ))
+        ) : (
+          // No Products Found - Modern Empty State
+          <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 animate-fadeIn">
+            <div className="relative">
+              {/* Animated Background Circles */}
+              <div className="absolute -top-8 -left-8 w-16 h-16 bg-[#bb7c05]/10 rounded-full animate-pulse"></div>
+              <div className="absolute -bottom-4 -right-6 w-12 h-12 bg-[#d49624]/10 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+              
+              {/* Main Icon Container */}
+              <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-2xl border-2 border-[#bb7c05]/20" style={{boxShadow: '0 20px 60px rgba(187, 124, 5, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1)'}}>
+                {/* Icon */}
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-full flex items-center justify-center animate-bounce">
+                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                  </svg>
+                </div>
+                
+                {/* Title */}
+                <h2 className="text-2xl font-bold text-[#2c3e50] text-center mb-3">
+                  Ürün Bulunamadı
+                </h2>
+                
+                {/* Description */}
+                <p className="text-gray-600 text-center mb-6 max-w-sm leading-relaxed">
+                  Bu kategoride henüz ürün bulunmuyor. Yakında lezzetli seçeneklerle karşınızda olacağız!
+                </p>
+                
+                {/* Action Button */}
+                <div className="flex justify-center">
+                  <Link href="/" className="px-8 py-3 bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white rounded-2xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 inline-block">
+                    Diğer Kategoriler
+                  </Link>
+                </div>
+              </div>
+              
+              {/* Floating Elements */}
+              <div className="absolute top-4 left-4 w-3 h-3 bg-[#bb7c05] rounded-full animate-ping"></div>
+              <div className="absolute bottom-8 right-4 w-2 h-2 bg-[#d49624] rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -279,7 +328,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           }
           
           .nav__image {
-            width: 105px;
+            width: 115px;
+            height: 115px;
           }
           
           .nav__itemContent {
@@ -287,15 +337,15 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           }
           
           .nav__title {
-            font-size: 14px;
+            font-size: 12px;
           }
           
           .nav__subtitle {
-            font-size: 11px;
+            font-size: 9px;
           }
           
           .nav__price {
-            font-size: 15px;
+            font-size: 13px;
           }
           
           .nav__actionIcon {
@@ -346,7 +396,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           }
           
           .nav__image {
-            width: 95px;
+            width: 115px;
+            height: 115px;
             left: 0;
           }
           
@@ -355,11 +406,11 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           }
           
           .nav__title {
-            font-size: 14px;
+            font-size: 13px;
           }
           
           .nav__subtitle {
-            font-size: 11px;
+            font-size: 10px;
             max-width: 90%;
           }
           
@@ -368,8 +419,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           }
           
           .nav__suffix {
-            font-size: 10px;
-            padding: 3px 6px;
+            font-size: 8px;
+            padding: 2px 5px;
           }
           
           .nav__actionIcon {
