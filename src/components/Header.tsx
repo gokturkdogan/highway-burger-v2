@@ -33,6 +33,13 @@ export default function Header() {
     setSidebarOpen(false)
   }
 
+  // Login ve register sayfalarında header'ı gizle
+  const shouldHideHeader = pathname.includes('/auth/login') || pathname.includes('/auth/register')
+
+  if (shouldHideHeader) {
+    return null
+  }
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full">
