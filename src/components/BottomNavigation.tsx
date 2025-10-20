@@ -21,10 +21,10 @@ export default function BottomNavigation() {
     return false
   }
 
-  // Login ve register sayfalarında appbar'ı gizle
-  const shouldHideAppBar = pathname.includes('/auth/login') || pathname.includes('/auth/register')
+  // Login, register ve admin sayfalarında appbar'ı gizle
+  const shouldHideAppBar = pathname.includes('/auth/login') || pathname.includes('/auth/register') || pathname.startsWith('/admin')
 
-  // Login/register sayfalarında appbar'ı render etme
+  // Login/register/admin sayfalarında appbar'ı render etme
   if (shouldHideAppBar) {
     return null
   }

@@ -37,10 +37,17 @@ export default function LoginPage() {
         // Başarılı
         toast.success('Giriş başarılı! Yönlendiriliyorsunuz...', 2000)
         
-        // Anasayfaya yönlendir
+        // Session'ı al ve role'e göre yönlendir
+        const response = await fetch('/api/auth/session')
+        const session = await response.json()
+        
         setTimeout(() => {
-          router.push('/')
-          router.refresh() // Session'ı güncelle
+          if (session?.user?.role === 'admin') {
+            router.push('/admin')
+          } else {
+            router.push('/')
+          }
+          router.refresh()
         }, 1500)
       } else {
         // Bilinmeyen hata

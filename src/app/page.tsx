@@ -6,8 +6,21 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import BottomNavigation from '@/components/BottomNavigation'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function HomePage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  // Admin kullanıcıyı admin paneline yönlendir
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.role === 'admin') {
+      router.push('/admin')
+    }
+  }, [status, session, router])
+
   // Database'den kategorileri çek
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories'],

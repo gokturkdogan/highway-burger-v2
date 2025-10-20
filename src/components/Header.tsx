@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { UserCircle, LogIn, UserPlus, X, ShoppingCart, Home, Package, MapPin } from 'lucide-react'
+import { UserCircle, LogIn, UserPlus, X, ShoppingCart, Home, Package, MapPin, Settings } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
@@ -33,8 +33,8 @@ export default function Header() {
     setSidebarOpen(false)
   }
 
-  // Login ve register sayfalarında header'ı gizle
-  const shouldHideHeader = pathname.includes('/auth/login') || pathname.includes('/auth/register')
+  // Login, register ve admin sayfalarında header'ı gizle
+  const shouldHideHeader = pathname.includes('/auth/login') || pathname.includes('/auth/register') || pathname.startsWith('/admin')
 
   if (shouldHideHeader) {
     return null
@@ -250,7 +250,30 @@ export default function Header() {
                         </div>
                       </Link>
 
-                  <button onClick={() => { signOut(); closeSidebar(); }} className="w-full">
+                      {/* Admin Panel - Only for Admin Users */}
+                      {session?.user?.role === 'admin' && (
+                        <Link href="/admin" onClick={closeSidebar} className="block">
+                          <div className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border-2 relative overflow-hidden group ${
+                            pathname.startsWith('/admin') 
+                              ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05]/30 -translate-x-1.5' 
+                              : 'bg-white border-transparent hover:border-[#bb7c05]/15 hover:-translate-x-1.5'
+                          }`} style={{boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05)'}}>
+                            <div className={`w-9.5 h-9.5 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-1 ${
+                              pathname.startsWith('/admin') ? 'text-[#d49624]' : 'text-[#bb7c05]'
+                            }`}>
+                              <Settings className="w-full h-full" />
+                            </div>
+                            <span className={`text-[15px] font-bold transition-colors duration-300 ${
+                              pathname.startsWith('/admin') ? 'text-[#bb7c05]' : 'text-[#2c3e50] group-hover:text-[#bb7c05]'
+                            }`}>Admin Paneli</span>
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#bb7c05] to-[#d49624] transition-opacity duration-300 ${
+                              pathname.startsWith('/admin') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                            }`}></div>
+                          </div>
+                        </Link>
+                      )}
+
+                      <button onClick={() => { signOut(); closeSidebar(); }} className="w-full">
                     <div className="flex items-center gap-4 p-4 bg-white rounded-2xl transition-all duration-300 border-2 border-transparent hover:border-[#bb7c05]/15 hover:-translate-x-1.5 relative overflow-hidden group" style={{boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05)'}}>
                       <div className="w-9.5 h-9.5 text-[#bb7c05] transition-all duration-300 group-hover:scale-110 group-hover:-rotate-1">
                         <LogIn className="w-full h-full" />

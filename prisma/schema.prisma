@@ -12,6 +12,7 @@ model User {
   name         String?
   email        String    @unique
   passwordHash String
+  role         String    @default("customer") // customer, admin
   createdAt    DateTime  @default(now())
   orders       Order[]
   addresses    Address[]

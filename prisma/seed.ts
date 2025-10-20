@@ -1,8 +1,28 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
+  // Admin kullanıcı oluştur
+  const adminPassword = await bcrypt.hash('admin123', 10)
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@highwayburger.com' },
+    update: {},
+    create: {
+      email: 'admin@highwayburger.com',
+      name: 'Admin',
+      passwordHash: adminPassword,
+      role: 'admin',
+    },
+  })
+
+  console.log('Admin kullanıcı oluşturuldu:', admin.email)
+  console.log('Email: admin@highwayburger.com')
+  console.log('Password: admin123')
+  console.log('---')
+
+
   // Kategorileri oluştur
   const categories = await Promise.all([
     prisma.category.upsert({
