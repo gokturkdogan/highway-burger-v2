@@ -50,14 +50,15 @@ model Coupon {
 }
 
 model Order {
-  id        Int         @id @default(autoincrement())
-  userId    Int
-  total     Float
-  discount  Float       @default(0)
-  status    String      @default("pending")
-  createdAt DateTime    @default(now())
-  user      User        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
+  id            Int         @id @default(autoincrement())
+  userId        Int?
+  total         Float
+  discount      Float       @default(0)
+  status        String      @default("pending")
+  paymentMethod String?     // Kapıda Nakit, Kapıda Kredi Kartı, Online Kredi Kartı
+  createdAt     DateTime    @default(now())
+  user          User?       @relation(fields: [userId], references: [id])
+  items         OrderItem[]
 }
 
 model OrderItem {

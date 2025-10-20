@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -34,6 +34,8 @@ export default function CheckoutPage() {
   const [guestAddress, setGuestAddress] = useState<any>(null)
   const [mounted, setMounted] = useState(false)
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<string>('')
+  const paymentMethodRef = useRef<HTMLDivElement>(null)
 
   const items = useCart((state) => state.items)
   const getTotal = useCart((state) => state.getTotal)
@@ -104,14 +106,46 @@ export default function CheckoutPage() {
       toast.warning('Lütfen teslimat adresinizi ekleyin', 3000)
       return
     }
+    if (!paymentMethod) {
+      toast.warning('Lütfen bir ödeme yöntemi seçin', 3000)
+      // Ödeme yöntemi seçimine scroll
+      paymentMethodRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      })
+      return
+    }
 
     try {
+      // Eğer Online Kredi Kartı değilse, sadece sipariş oluştur
+      if (paymentMethod !== 'online') {
+        toast.info('Sipariş oluşturuluyor...', 2000)
+
+        // Sipariş oluştur
+        const order = await axios.post('/api/orders', {
+          total: getTotalWithDiscount(),
+          status: 'pending',
+          paymentMethod: paymentMethod === 'cash' ? 'Kapıda Nakit' : 'Kapıda Kredi Kartı',
+        })
+
+        toast.success('Sipariş başarıyla oluşturuldu!', 3000)
+        
+        // Başarı sayfasına yönlendir
+        setTimeout(() => {
+          router.push('/payment/success')
+        }, 1500)
+        
+        return
+      }
+
+      // Online ödeme akışı
       toast.info('Ödeme sayfası hazırlanıyor...', 2000)
 
       // Sipariş oluştur
       const order = await axios.post('/api/orders', {
         total: getTotalWithDiscount(),
         status: 'pending',
+        paymentMethod: 'Online Kredi Kartı',
       })
 
       const orderId = order.data.id
@@ -236,8 +270,8 @@ export default function CheckoutPage() {
       {/* Content */}
       <div className="px-4 md:px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-64 md:pb-6">
-          {/* Left Side - Address Selection */}
-          <div className="lg:col-span-2 space-y-4">
+          {/* Left Side - Address Selection & Payment Method */}
+          <div className="lg:col-span-2 space-y-6">
             {/* Delivery Info Card */}
             <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl shadow-lg p-5 border-2 border-blue-200 animate-fadeIn">
               <div className="flex items-start gap-3">
@@ -396,6 +430,91 @@ export default function CheckoutPage() {
                 )}
               </>
             )}
+
+            {/* Payment Method Selection */}
+            <div ref={paymentMethodRef}>
+              <h2 className="text-lg font-bold text-[#2c3e50] mb-4">Ödeme Yöntemi</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Kapıda Nakit */}
+              <button
+                onClick={() => setPaymentMethod('cash')}
+                className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
+                  paymentMethod === 'cash'
+                    ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
+                    : 'bg-white border-gray-200 hover:border-[#bb7c05]/30 hover:shadow-xl'
+                }`}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-3 ${
+                    paymentMethod === 'cash'
+                      ? 'bg-gradient-to-br from-[#bb7c05] to-[#d49624]'
+                      : 'bg-gray-100'
+                  }`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${paymentMethod === 'cash' ? 'text-white' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <h3 className={`font-bold mb-1 ${paymentMethod === 'cash' ? 'text-[#bb7c05]' : 'text-[#2c3e50]'}`}>
+                    Kapıda Nakit
+                  </h3>
+                  <p className="text-xs text-gray-600">Teslimat sırasında nakit ödeyin</p>
+                </div>
+              </button>
+
+              {/* Kapıda Kredi Kartı */}
+              <button
+                onClick={() => setPaymentMethod('card-on-delivery')}
+                className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
+                  paymentMethod === 'card-on-delivery'
+                    ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
+                    : 'bg-white border-gray-200 hover:border-[#bb7c05]/30 hover:shadow-xl'
+                }`}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-3 ${
+                    paymentMethod === 'card-on-delivery'
+                      ? 'bg-gradient-to-br from-[#bb7c05] to-[#d49624]'
+                      : 'bg-gray-100'
+                  }`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${paymentMethod === 'card-on-delivery' ? 'text-white' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                  </div>
+                  <h3 className={`font-bold mb-1 ${paymentMethod === 'card-on-delivery' ? 'text-[#bb7c05]' : 'text-[#2c3e50]'}`}>
+                    Kapıda Kredi Kartı
+                  </h3>
+                  <p className="text-xs text-gray-600">Teslimat sırasında kartla ödeyin</p>
+                </div>
+              </button>
+
+              {/* Online Kredi Kartı */}
+              <button
+                onClick={() => setPaymentMethod('online')}
+                className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
+                  paymentMethod === 'online'
+                    ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
+                    : 'bg-white border-gray-200 hover:border-[#bb7c05]/30 hover:shadow-xl'
+                }`}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-3 ${
+                    paymentMethod === 'online'
+                      ? 'bg-gradient-to-br from-[#bb7c05] to-[#d49624]'
+                      : 'bg-gray-100'
+                  }`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${paymentMethod === 'online' ? 'text-white' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <h3 className={`font-bold mb-1 ${paymentMethod === 'online' ? 'text-[#bb7c05]' : 'text-[#2c3e50]'}`}>
+                    Online Kredi Kartı
+                  </h3>
+                  <p className="text-xs text-gray-600">Şimdi güvenli ödeme yapın</p>
+                </div>
+              </button>
+              </div>
+            </div>
           </div>
 
           {/* Right Side - Order Summary (Desktop Only) */}

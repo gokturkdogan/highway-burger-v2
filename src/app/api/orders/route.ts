@@ -7,17 +7,18 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     const body = await request.json()
-    const { total, status } = body
+    const { total, status, paymentMethod } = body
 
     const order = await prisma.order.create({
       data: {
         userId: session?.user?.id ? parseInt(session.user.id) : null,
         total: parseFloat(total),
         status: status || 'pending',
+        paymentMethod: paymentMethod || null,
       },
     })
 
-    console.log('✅ Order created:', order.id)
+    console.log('✅ Order created:', order.id, 'Payment method:', paymentMethod)
 
     return NextResponse.json(order)
   } catch (error: any) {
