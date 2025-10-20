@@ -74,13 +74,6 @@ npx tsx prisma/seed.ts
 npm run dev
 ```
 
-## 📝 Admin Girişi
-
-```
-Email: admin@highwayburger.com
-Şifre: admin123
-```
-
 ## 📄 Lisans
 
 Bu proje Highway Burger için özel olarak geliştirilmiştir.
