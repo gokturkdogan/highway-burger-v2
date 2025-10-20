@@ -147,7 +147,7 @@ export default function CartPage() {
           /* Cart Content */
           <>
             {/* Cart Items */}
-            <div className="space-y-4 mb-32 md:mb-6 md:grid md:grid-cols-1 lg:grid-cols-3 md:gap-6">
+            <div className="space-y-4 pb-64 md:pb-6 md:grid md:grid-cols-1 lg:grid-cols-3 md:gap-6">
               {/* Items List */}
               <div className="lg:col-span-2 space-y-4">
               {items.map((item, index) => (
