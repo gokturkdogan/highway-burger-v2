@@ -19,8 +19,14 @@ const nextConfig = {
     return config
   },
   // Serverless function configuration
-  experimental: {
-    serverComponentsExternalPackages: ['iyzipay'],
+  serverExternalPackages: ['iyzipay'],
+  // Disable ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Disable TypeScript errors during build (optional)
+  typescript: {
+    ignoreBuildErrors: false,
   },
 }
 

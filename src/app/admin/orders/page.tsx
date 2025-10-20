@@ -59,14 +59,19 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
-  // Fetch orders
-  const { data: orders, isLoading } = useQuery<Order[]>({
-    queryKey: ['admin-orders', selectedStatus],
+  // Fetch ALL orders (no filter on API)
+  const { data: allOrders, isLoading } = useQuery<Order[]>({
+    queryKey: ['admin-orders'],
     queryFn: async () => {
-      const res = await axios.get(`/api/admin/orders?status=${selectedStatus}`)
+      const res = await axios.get('/api/admin/orders')
       return res.data
     },
   })
+
+  // Filter orders based on selected status (frontend filtering)
+  const orders = selectedStatus === 'all' 
+    ? allOrders 
+    : allOrders?.filter(o => o.status === selectedStatus)
 
   // Update order status
   const updateOrderMutation = useMutation({
@@ -134,12 +139,12 @@ export default function AdminOrdersPage() {
   })
 
   const stats = {
-    all: orders?.length || 0,
-    received: orders?.filter(o => o.status === 'received').length || 0,
-    preparing: orders?.filter(o => o.status === 'preparing').length || 0,
-    on_the_way: orders?.filter(o => o.status === 'on_the_way').length || 0,
-    delivered: orders?.filter(o => o.status === 'delivered').length || 0,
-    cancelled: orders?.filter(o => o.status === 'cancelled').length || 0,
+    all: allOrders?.length || 0,
+    received: allOrders?.filter(o => o.status === 'received').length || 0,
+    preparing: allOrders?.filter(o => o.status === 'preparing').length || 0,
+    on_the_way: allOrders?.filter(o => o.status === 'on_the_way').length || 0,
+    delivered: allOrders?.filter(o => o.status === 'delivered').length || 0,
+    cancelled: allOrders?.filter(o => o.status === 'cancelled').length || 0,
   }
 
   if (isLoading) {

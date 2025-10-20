@@ -79,10 +79,10 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
         id: product.id,
         name: product.name,
         price: getCurrentPrice(),
-        imageUrl: product.imageUrl,
+        imageUrl: product.imageUrl || null,
         slug: `${product.id}`, // Slug olarak id kullan (gerekirse düzenlenebilir)
         selectedOption: selectedPrice,
-        extraText: product.extraText,
+        extraText: product.extraText || null,
       })
     }
     

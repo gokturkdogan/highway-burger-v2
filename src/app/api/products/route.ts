@@ -12,8 +12,11 @@ export async function GET(req: NextRequest) {
             category: {
               slug: categorySlug,
             },
+            isActive: true, // Sadece aktif ürünleri göster
           }
-        : undefined,
+        : {
+            isActive: true, // Sadece aktif ürünleri göster
+          },
       include: {
         category: true,
       },

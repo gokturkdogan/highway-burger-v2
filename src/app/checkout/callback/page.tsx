@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, XCircle } from 'lucide-react'
 
-export default function CheckoutCallbackPage() {
+function CallbackContent() {
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'success' | 'failed' | 'loading'>('loading')
 
@@ -63,6 +63,18 @@ export default function CheckoutCallbackPage() {
         </Link>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p>Ödeme durumu kontrol ediliyor...</p>
+      </div>
+    }>
+      <CallbackContent />
+    </Suspense>
   )
 }
 
