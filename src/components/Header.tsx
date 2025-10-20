@@ -143,7 +143,7 @@ export default function Header() {
         )}
 
       {/* Sidebar */}
-      <div className={`fixed top-0 right-0 h-full w-3/4 bg-gradient-to-br from-white to-gray-50 transform transition-transform duration-300 ease-in-out z-[10000] ${
+      <div className={`fixed top-0 right-0 h-full w-3/4 md:w-80 lg:w-72 bg-gradient-to-br from-white to-gray-50 transform transition-transform duration-300 ease-in-out z-[10000] ${
         sidebarOpen ? 'translate-x-0' : 'translate-x-full'
       }`} style={{boxShadow: '0 0 40px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.1), -10px 0 30px rgba(0, 0, 0, 0.08)'}}>
         <div className="h-full flex flex-col justify-between">
