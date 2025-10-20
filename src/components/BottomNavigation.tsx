@@ -21,6 +21,14 @@ export default function BottomNavigation() {
     return false
   }
 
+  // Login ve register sayfalarında appbar'ı gizle
+  const shouldHideAppBar = pathname.includes('/auth/login') || pathname.includes('/auth/register')
+
+  // Login/register sayfalarında appbar'ı render etme
+  if (shouldHideAppBar) {
+    return null
+  }
+
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 animate-slideUp">
       {/* Glassmorphism Background */}

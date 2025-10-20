@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from './providers'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import BottomNavigation from '@/components/BottomNavigation'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const poppins = Poppins({
@@ -44,6 +45,7 @@ export default function RootLayout({
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>
+            <BottomNavigation />
           </div>
         </Providers>
       </body>
