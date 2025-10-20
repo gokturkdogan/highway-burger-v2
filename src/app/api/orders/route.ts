@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +40,31 @@ export async function POST(request: Request) {
     })
 
     console.log('✅ Order created:', order.id, 'Payment method:', paymentMethod, 'Items:', items?.length)
+
+    // Email gönder
+    const emailAddress = session?.user?.email || address?.email
+    if (emailAddress) {
+      try {
+        await sendOrderConfirmationEmail(emailAddress, {
+          orderId: order.id,
+          name: address?.fullName || session?.user?.name || 'Müşteri',
+          total: order.total,
+          items: items || [],
+          shippingAddress: {
+            fullName: address?.fullName || '',
+            phone: address?.phone || '',
+            city: address?.city || '',
+            district: address?.district || '',
+            fullAddress: address?.fullAddress || '',
+          },
+          paymentMethod: paymentMethod || 'Belirtilmemiş',
+        })
+        console.log('✅ Order confirmation email sent to:', emailAddress)
+      } catch (emailError) {
+        console.error('❌ Email send error:', emailError)
+        // Email hatası sipariş oluşturmayı engellemez
+      }
+    }
 
     return NextResponse.json(order)
   } catch (error: any) {

@@ -60,28 +60,43 @@ export default function PaymentSuccessPage() {
             Ödemeniz başarıyla tamamlandı. Siparişiniz hazırlanıyor ve en kısa sürede size ulaştırılacak.
           </p>
 
-          {/* Info Cards */}
-          <div className="grid gap-4 mb-8 animate-fadeIn" style={{animationDelay: '0.2s'}}>
-            {/* Delivery Time Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-xl border-2 border-green-200 hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-full flex items-center justify-center shadow-lg">
-                  <Clock className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-bold text-[#2c3e50] mb-1">Tahmini Teslimat</h3>
-                  <p className="text-2xl font-black text-[#bb7c05]">15-25 dakika</p>
-                </div>
+        {/* Info Cards */}
+        <div className="grid gap-4 mb-8 animate-fadeIn" style={{animationDelay: '0.2s'}}>
+          {/* Delivery Time Card */}
+          <div className="bg-white rounded-2xl p-6 shadow-xl border-2 border-green-200 hover:scale-105 transition-transform duration-300">
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-full flex items-center justify-center shadow-lg">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-xl font-bold text-[#2c3e50] mb-1">Tahmini Teslimat</h3>
+                <p className="text-2xl font-black text-[#bb7c05]">15-25 dakika</p>
               </div>
             </div>
+          </div>
 
-            {/* Thank You Message */}
-            <div className="bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 rounded-2xl p-6 border-2 border-[#bb7c05]/20">
-              <p className="text-base text-[#2c3e50] font-medium">
-                🍔 <strong>Highway Burger</strong>'ı tercih ettiğiniz için teşekkür ederiz!
-              </p>
+          {/* Email Confirmation */}
+          <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-6 border-2 border-blue-200">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-blue-900 mb-1">Sipariş Detayları E-posta ile Gönderildi</h3>
+                <p className="text-sm text-blue-700">Sipariş bilgileriniz mail adresinize iletilmiştir. Lütfen kontrol edin.</p>
+              </div>
             </div>
           </div>
+
+          {/* Thank You Message */}
+          <div className="bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 rounded-2xl p-6 border-2 border-[#bb7c05]/20">
+            <p className="text-base text-[#2c3e50] font-medium">
+              🍔 <strong>Highway Burger</strong>'ı tercih ettiğiniz için teşekkür ederiz!
+            </p>
+          </div>
+        </div>
 
           {/* Button */}
           <Link
