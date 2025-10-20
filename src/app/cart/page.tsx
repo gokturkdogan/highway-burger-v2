@@ -220,7 +220,7 @@ export default function CartPage() {
                   {/* Delete Button */}
                   <button
                     onClick={() => setDeleteItemId(item.id)}
-                    className="absolute top-3 right-3 w-9 h-9 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                    className="absolute top-3 right-3 w-9 h-9 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all duration-200 flex items-center justify-center md:opacity-0 md:group-hover:opacity-100"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

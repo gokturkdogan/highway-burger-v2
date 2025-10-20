@@ -505,33 +505,46 @@ export default function AddressPage() {
             </div>
           ))}
 
-          {/* Empty State - Minimal */}
+          {/* Empty State - Animated */}
           {!isLoading && addresses && addresses.length === 0 && !isAddingNew && !editingId && (
-            <div className="col-span-full flex flex-col items-center justify-center min-h-[50vh] px-4">
-              <div className="text-center animate-fadeIn">
-                {/* Icon */}
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-full flex items-center justify-center shadow-lg">
-                  <MapPin className="w-12 h-12 text-white" />
+            <div className="col-span-full flex flex-col items-center justify-center min-h-[60vh] px-4 animate-fadeIn">
+              <div className="relative">
+                {/* Animated Background Circles */}
+                <div className="absolute -top-8 -left-8 w-16 h-16 bg-[#bb7c05]/10 rounded-full animate-pulse"></div>
+                <div className="absolute -bottom-4 -right-6 w-12 h-12 bg-[#d49624]/10 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                
+                {/* Main Icon Container */}
+                <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-2xl border-2 border-[#bb7c05]/20" style={{boxShadow: '0 20px 60px rgba(187, 124, 5, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1)'}}>
+                  {/* Icon */}
+                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-full flex items-center justify-center animate-bounce">
+                    <MapPin className="w-12 h-12 text-white" />
+                  </div>
+                  
+                  {/* Title */}
+                  <h2 className="text-2xl font-bold text-[#2c3e50] text-center mb-3">
+                    Henüz Kayıtlı Adresiniz Yok
+                  </h2>
+                  
+                  {/* Description */}
+                  <p className="text-gray-600 text-center mb-6 max-w-sm leading-relaxed">
+                    Sipariş verebilmek için bir teslimat adresi eklemelisiniz.
+                  </p>
+                  
+                  {/* Action Button */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setIsAddingNew(true)}
+                      className="px-8 py-3 bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white rounded-2xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 inline-flex items-center gap-2"
+                    >
+                      <Plus className="w-5 h-5" />
+                      Adres Ekle
+                    </button>
+                  </div>
                 </div>
                 
-                {/* Title */}
-                <h3 className="text-2xl font-bold text-[#2c3e50] mb-3">
-                  Henüz Kayıtlı Adresiniz Yok
-                </h3>
-                
-                {/* Description */}
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  Sipariş verebilmek için bir teslimat adresi eklemelisiniz
-                </p>
-                
-                {/* Action Button */}
-                <button
-                  onClick={() => setIsAddingNew(true)}
-                  className="bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white px-8 py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 mx-auto"
-                >
-                  <Plus className="w-5 h-5" />
-                  Adres Ekle
-                </button>
+                {/* Floating Elements */}
+                <div className="absolute top-4 left-4 w-3 h-3 bg-[#bb7c05] rounded-full animate-ping"></div>
+                <div className="absolute bottom-8 right-4 w-2 h-2 bg-[#d49624] rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
               </div>
             </div>
           )}

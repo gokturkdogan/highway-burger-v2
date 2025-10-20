@@ -39,8 +39,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${poppins.variable} ${montserrat.variable} ${kanit.variable} ${varelaRound.variable}`}>
-      <body>
+    <html lang="tr" className={`${inter.variable} ${poppins.variable} ${montserrat.variable} ${kanit.variable} ${varelaRound.variable}`} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Header />

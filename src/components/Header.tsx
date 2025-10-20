@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { UserCircle, LogIn, UserPlus, X, ShoppingCart, Home, Package } from 'lucide-react'
+import { UserCircle, LogIn, UserPlus, X, ShoppingCart, Home, Package, MapPin } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
@@ -210,25 +210,25 @@ export default function Header() {
                     </div>
                   </Link>
 
-                  <Link href="/address" onClick={closeSidebar} className="block">
-                    <div className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border-2 relative overflow-hidden group ${
-                      pathname === '/address' 
-                        ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05]/30 -translate-x-1.5' 
-                        : 'bg-white border-transparent hover:border-[#bb7c05]/15 hover:-translate-x-1.5'
-                    }`} style={{boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05)'}}>
-                      <div className={`w-9.5 h-9.5 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-1 ${
-                        pathname === '/address' ? 'text-[#d49624]' : 'text-[#bb7c05]'
-                      }`}>
-                        <UserCircle className="w-full h-full" />
-                      </div>
-                      <span className={`text-[15px] font-bold transition-colors duration-300 ${
-                        pathname === '/address' ? 'text-[#bb7c05]' : 'text-[#2c3e50] group-hover:text-[#bb7c05]'
-                      }`}>Adreslerim</span>
-                      <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#bb7c05] to-[#d49624] transition-opacity duration-300 ${
-                        pathname === '/address' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}></div>
-                    </div>
-                  </Link>
+                      <Link href="/address" onClick={closeSidebar} className="block">
+                        <div className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border-2 relative overflow-hidden group ${
+                          pathname === '/address' 
+                            ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05]/30 -translate-x-1.5' 
+                            : 'bg-white border-transparent hover:border-[#bb7c05]/15 hover:-translate-x-1.5'
+                        }`} style={{boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05)'}}>
+                          <div className={`w-9.5 h-9.5 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-1 ${
+                            pathname === '/address' ? 'text-[#d49624]' : 'text-[#bb7c05]'
+                          }`}>
+                            <MapPin className="w-full h-full" />
+                          </div>
+                          <span className={`text-[15px] font-bold transition-colors duration-300 ${
+                            pathname === '/address' ? 'text-[#bb7c05]' : 'text-[#2c3e50] group-hover:text-[#bb7c05]'
+                          }`}>Adreslerim</span>
+                          <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#bb7c05] to-[#d49624] transition-opacity duration-300 ${
+                            pathname === '/address' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          }`}></div>
+                        </div>
+                      </Link>
 
                       <Link href="/orders" onClick={closeSidebar} className="block">
                         <div className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border-2 relative overflow-hidden group ${
