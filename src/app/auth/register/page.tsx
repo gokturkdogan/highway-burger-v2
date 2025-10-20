@@ -3,19 +3,22 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Mail, Lock, Eye, EyeOff, User, Phone } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react'
+import { useToast } from '@/contexts/ToastContext'
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const toast = useToast()
+  const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -27,9 +30,57 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // TODO: Register logic
-    console.log('Register:', formData)
-    setTimeout(() => setIsLoading(false), 1000)
+
+    try {
+      // Şifre eşleşme kontrolü
+      if (formData.password !== formData.confirmPassword) {
+        toast.error('Şifreler eşleşmiyor!', 4000)
+        setIsLoading(false)
+        return
+      }
+
+      // Şifre uzunluk kontrolü
+      if (formData.password.length < 6) {
+        toast.error('Şifre en az 6 karakter olmalıdır!', 4000)
+        setIsLoading(false)
+        return
+      }
+
+      // Register API'ye istek gönder
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        // Hata durumu
+        toast.error(data.error || 'Bir hata oluştu!', 4000)
+        setIsLoading(false)
+        return
+      }
+
+      // Başarılı kayıt
+      toast.success('Hesabınız başarıyla oluşturuldu! Giriş sayfasına yönlendiriliyorsunuz...', 3000)
+
+      // Login sayfasına yönlendir
+      setTimeout(() => {
+        router.push('/auth/login')
+      }, 2000)
+
+    } catch (error) {
+      console.error('Register error:', error)
+      toast.error('Bir hata oluştu. Lütfen tekrar deneyin.', 4000)
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -106,33 +157,6 @@ export default function RegisterPage() {
                 }`}
               >
                 E-posta Adresiniz
-              </label>
-            </div>
-
-            {/* Phone Input with Floating Label */}
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 pointer-events-none">
-                <Phone className="w-5 h-5" />
-              </div>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-[#bb7c05] focus:ring-0 outline-none transition-all duration-200 peer placeholder-transparent autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
-                placeholder="Telefon"
-                required
-              />
-              <label
-                htmlFor="phone"
-                className={`absolute left-12 transition-all duration-200 pointer-events-none ${
-                  formData.phone
-                    ? '-top-2.5 text-xs bg-white px-2 text-[#bb7c05] font-medium'
-                    : 'top-1/2 -translate-y-1/2 text-gray-500 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-xs peer-focus:bg-white peer-focus:px-2 peer-focus:text-[#bb7c05] peer-focus:font-medium peer-focus:translate-y-0'
-                }`}
-              >
-                Telefon Numaranız
               </label>
             </div>
 

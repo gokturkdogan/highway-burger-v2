@@ -1,27 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import { z } from 'zod'
 
-const registerSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().email('Geçerli bir email adresi giriniz'),
-  password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır'),
-})
-
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json()
-    const { name, email, password } = registerSchema.parse(body)
+    const body = await request.json()
+    const { name, email, password } = body
 
-    // Kullanıcı var mı kontrol et
+    // Validasyon
+    if (!name || !email || !password) {
+      return NextResponse.json(
+        { error: 'Tüm alanlar zorunludur' },
+        { status: 400 }
+      )
+    }
+
+    // Email format kontrolü
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Geçerli bir e-posta adresi giriniz' },
+        { status: 400 }
+      )
+    }
+
+    // Şifre uzunluğu kontrolü
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Şifre en az 6 karakter olmalıdır' },
+        { status: 400 }
+      )
+    }
+
+    // Kullanıcı zaten var mı kontrol et
     const existingUser = await prisma.user.findUnique({
       where: { email },
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Bu email adresi zaten kayıtlı' },
+        { error: 'Bu e-posta adresi zaten kullanılıyor' },
         { status: 400 }
       )
     }
@@ -40,28 +58,20 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: 'Kayıt başarılı',
+        message: 'Hesabınız başarıyla oluşturuldu',
         user: {
           id: user.id,
-          email: user.email,
           name: user.name,
+          email: user.email,
         },
       },
       { status: 201 }
     )
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
     console.error('Register error:', error)
     return NextResponse.json(
-      { error: 'Kayıt işlemi sırasında bir hata oluştu' },
+      { error: 'Bir hata oluştu. Lütfen tekrar deneyin.' },
       { status: 500 }
     )
   }
 }
-
