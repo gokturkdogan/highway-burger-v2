@@ -58,12 +58,13 @@ model Order {
   paymentStatus   String      @default("pending")      // pending, paid, failed
   paymentMethod   String?                              // Kapıda Nakit, Kapıda Kredi Kartı, Online Kredi Kartı
   // Teslimat Adresi Bilgileri
-  deliveryName     String?
-  deliveryPhone    String?
-  deliveryCity     String?
-  deliveryDistrict String?
-  deliveryAddress  String?
-  deliveryLatitude Float?     // Harita koordinatı
+  deliveryName      String?
+  deliveryEmail     String?   // Guest email
+  deliveryPhone     String?
+  deliveryCity      String?
+  deliveryDistrict  String?
+  deliveryAddress   String?
+  deliveryLatitude  Float?    // Harita koordinatı
   deliveryLongitude Float?    // Harita koordinatı
   createdAt        DateTime   @default(now())
   user             User?      @relation(fields: [userId], references: [id])

@@ -168,11 +168,11 @@ export default function CheckoutPage() {
       // Buyer
       const nameParts = deliveryAddress!.fullName.split(' ')
       const buyer = {
-        id: String(session?.user?.id || Date.now()),
+        id: String(session?.user?.id || `guest_${orderId}`),
         name: nameParts[0] || 'Guest',
         surname: nameParts.slice(1).join(' ') || 'User',
         gsmNumber: deliveryAddress!.phone || '+905555555555',
-        email: session?.user?.email || 'guest@example.com',
+        email: session?.user?.email || deliveryAddress!.email || 'guest@example.com',
         identityNumber: '11111111111',
         registrationAddress: deliveryAddress!.fullAddress,
         ip: '85.34.78.112',
@@ -377,63 +377,50 @@ export default function CheckoutPage() {
                 )}
               </>
             ) : (
-              /* Guest User - Address Form */
+              /* Guest User - Inline Address Form */
               <>
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-bold text-[#2c3e50]">Teslimat Adresi</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-[#2c3e50]">İletişim ve Teslimat Bilgileri</h2>
                 </div>
 
-                {!guestAddress ? (
-                  <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/10 rounded-full flex items-center justify-center">
-                      <MapPin className="w-10 h-10 text-[#bb7c05]" />
+                <button
+                  onClick={() => setIsAddressModalOpen(true)}
+                  className="w-full bg-white rounded-2xl shadow-lg p-6 border-2 border-gray-200 hover:border-[#bb7c05]/30 transition-all duration-300 hover:shadow-xl group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/10 rounded-xl flex items-center justify-center group-hover:from-[#bb7c05]/20 group-hover:to-[#d49624]/20 transition-all">
+                      {guestAddress ? (
+                        <CheckCircle className="w-7 h-7 text-[#bb7c05]" />
+                      ) : (
+                        <MapPin className="w-7 h-7 text-[#bb7c05]" />
+                      )}
                     </div>
-                    <h3 className="text-lg font-bold text-[#2c3e50] mb-2">Teslimat Adresi Ekle</h3>
-                    <p className="text-gray-600 mb-4">Devam etmek için adres bilgilerinizi girin</p>
-                    <button
-                      onClick={() => setIsAddressModalOpen(true)}
-                      className="bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center gap-2 mx-auto"
-                    >
-                      <Plus className="w-5 h-5" />
-                      Adres Ekle
-                    </button>
+                    <div className="flex-1 text-left">
+                      {guestAddress ? (
+                        <>
+                          <div className="font-bold text-[#2c3e50] mb-1 flex items-center gap-2">
+                            {guestAddress.fullName}
+                            {guestAddress.email && (
+                              <span className="text-xs font-normal text-gray-500">({guestAddress.email})</span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {guestAddress.phone} • {guestAddress.city} / {guestAddress.district}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1 line-clamp-1">
+                            {guestAddress.fullAddress}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="font-bold text-[#2c3e50] mb-1">Adres Bilgilerini Girin</div>
+                          <div className="text-sm text-gray-600">İletişim ve teslimat bilgilerinizi ekleyin</div>
+                        </>
+                      )}
+                    </div>
+                    <Edit2 className="w-5 h-5 text-[#bb7c05] group-hover:scale-110 transition-transform" />
                   </div>
-                ) : (
-                  <div className="bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 rounded-2xl shadow-lg p-5 border-2 border-[#bb7c05]">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-xl flex items-center justify-center">
-                          <MapPin className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="font-bold text-[#2c3e50]">{guestAddress.title}</h3>
-                      </div>
-                      <button
-                        onClick={() => setIsAddressModalOpen(true)}
-                        className="text-[#bb7c05] hover:text-[#d49624] transition-colors"
-                      >
-                        <Edit2 className="w-5 h-5" />
-                      </button>
-                    </div>
-
-                    <div className="space-y-1.5 text-sm text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-gray-500" />
-                        <span className="font-medium">{guestAddress.fullName}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-gray-500" />
-                        <span>{guestAddress.phone}</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
-                        <div>
-                          <div className="font-medium">{guestAddress.city} / {guestAddress.district}</div>
-                          <div className="text-gray-600 leading-relaxed mt-0.5">{guestAddress.fullAddress}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </button>
               </>
             )}
 
@@ -776,6 +763,7 @@ export default function CheckoutPage() {
         onClose={() => setIsAddressModalOpen(false)}
         onSave={(address) => addAddressMutation.mutate(address)}
         isLoading={addAddressMutation.isPending}
+        isGuest={status === 'unauthenticated'}
       />
 
       <style jsx>{`

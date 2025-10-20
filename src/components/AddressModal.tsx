@@ -22,12 +22,14 @@ interface AddressModalProps {
   onClose: () => void
   onSave: (address: any) => void
   isLoading?: boolean
+  isGuest?: boolean // Guest kullanıcı mı?
 }
 
-export default function AddressModal({ isOpen, onClose, onSave, isLoading = false }: AddressModalProps) {
+export default function AddressModal({ isOpen, onClose, onSave, isLoading = false, isGuest = false }: AddressModalProps) {
   const [formData, setFormData] = useState({
     title: 'Ev',
     fullName: '',
+    email: '',
     phone: '',
     city: 'İstanbul',
     district: '',
@@ -48,6 +50,7 @@ export default function AddressModal({ isOpen, onClose, onSave, isLoading = fals
       setFormData({
         title: 'Ev',
         fullName: '',
+        email: '',
         phone: '',
         city: 'İstanbul',
         district: '',
@@ -150,6 +153,36 @@ export default function AddressModal({ isOpen, onClose, onSave, isLoading = fals
                   Ad Soyad
                 </label>
               </div>
+
+              {/* Email - Guest için */}
+              {isGuest && (
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 pointer-events-none z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    </svg>
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-[#bb7c05] focus:ring-0 outline-none transition-all duration-200 peer placeholder-transparent"
+                    placeholder="E-posta"
+                    required
+                  />
+                  <label
+                    htmlFor="email"
+                    className={`absolute left-12 transition-all duration-200 pointer-events-none ${
+                      formData.email
+                        ? '-top-2.5 text-xs bg-white px-2 text-[#bb7c05] font-medium'
+                        : 'top-1/2 -translate-y-1/2 text-gray-500 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-xs peer-focus:bg-white peer-focus:px-2 peer-focus:text-[#bb7c05] peer-focus:font-medium peer-focus:translate-y-0'
+                    }`}
+                  >
+                    E-posta Adresiniz
+                  </label>
+                </div>
+              )}
 
               {/* Phone */}
               <div className="relative">

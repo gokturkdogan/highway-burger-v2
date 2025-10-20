@@ -424,7 +424,10 @@ export default function ProfilePage() {
           </div>
           <div className="bg-white rounded-2xl shadow-lg p-6 text-center border-t-4 border-blue-500">
             <div className="text-3xl font-bold text-blue-600 mb-1">
-              {new Date(session.user.createdAt || Date.now()).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' })}
+              {session.user.createdAt 
+                ? new Date(session.user.createdAt).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' })
+                : 'Yeni Üye'
+              }
             </div>
             <div className="text-sm text-gray-600 font-medium">Üyelik Tarihi</div>
           </div>

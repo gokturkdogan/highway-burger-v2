@@ -18,6 +18,7 @@ export async function POST(request: Request) {
         paymentMethod: paymentMethod || null,
         // Teslimat bilgileri
         deliveryName: address?.fullName || null,
+        deliveryEmail: address?.email || null,
         deliveryPhone: address?.phone || null,
         deliveryCity: address?.city || null,
         deliveryDistrict: address?.district || null,
