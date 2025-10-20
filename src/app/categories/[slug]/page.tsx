@@ -1,14 +1,17 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
+import ProductModal from '@/components/ProductModal'
 
 export default function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   
   const { data: products, isLoading } = useQuery({
     queryKey: ['products', slug],
@@ -17,6 +20,16 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
       return res.data
     },
   })
+
+  const handleProductClick = (product: any) => {
+    setSelectedProduct(product)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setTimeout(() => setSelectedProduct(null), 300) // Animation bittikten sonra temizle
+  }
 
   // Kategori türlerini belirle
   const isDrinks = slug === 'drinks'
@@ -76,6 +89,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
             <div
               key={product.id}
               className={`nav__item ${isSandwiches ? '-sandwich' : ''} ${isDrinks ? '-drink' : ''} ${isToasts ? '-toast' : ''}`}
+              onClick={() => handleProductClick(product)}
             >
               {/* Background Effects */}
               <div className="nav__bgGradient" style={{
@@ -268,6 +282,15 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           </div>
         )}
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <ProductModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          product={selectedProduct}
+        />
+      )}
 
       <style jsx>{`
         @keyframes fadeIn {
