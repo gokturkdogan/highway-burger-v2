@@ -8,6 +8,7 @@ import axios from 'axios'
 import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, Star, Phone, User } from 'lucide-react'
 import { useToast } from '@/contexts/ToastContext'
 import ConfirmModal from '@/components/ConfirmModal'
+import CustomSelect from '@/components/CustomSelect'
 
 interface Address {
   id: number
@@ -33,7 +34,7 @@ export default function AddressPage() {
     title: 'Ev',
     fullName: '',
     phone: '',
-    city: '',
+    city: 'İstanbul',
     district: '',
     fullAddress: '',
     isDefault: false,
@@ -109,7 +110,7 @@ export default function AddressPage() {
       title: 'Ev',
       fullName: '',
       phone: '',
-      city: '',
+      city: 'İstanbul',
       district: '',
       fullAddress: '',
       isDefault: false,
@@ -315,43 +316,30 @@ export default function AddressPage() {
                     type="text"
                     id="city"
                     value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-[#bb7c05] focus:ring-0 outline-none transition-all duration-200 peer placeholder-transparent autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
+                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed peer placeholder-transparent"
                     placeholder="İl"
-                    required
+                    disabled
+                    readOnly
                   />
                   <label
                     htmlFor="city"
-                    className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                      formData.city
-                        ? '-top-2.5 text-xs bg-white px-2 text-[#bb7c05] font-medium'
-                        : 'top-1/2 -translate-y-1/2 text-gray-500 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-xs peer-focus:bg-white peer-focus:px-2 peer-focus:text-[#bb7c05] peer-focus:font-medium peer-focus:translate-y-0'
-                    }`}
+                    className="absolute left-4 -top-2.5 text-xs bg-white px-2 text-gray-500 font-medium pointer-events-none"
                   >
                     İl
                   </label>
                 </div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="district"
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-[#bb7c05] focus:ring-0 outline-none transition-all duration-200 peer placeholder-transparent autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
-                    placeholder="İlçe"
-                    required
-                  />
-                  <label
-                    htmlFor="district"
-                    className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                      formData.district
-                        ? '-top-2.5 text-xs bg-white px-2 text-[#bb7c05] font-medium'
-                        : 'top-1/2 -translate-y-1/2 text-gray-500 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-xs peer-focus:bg-white peer-focus:px-2 peer-focus:text-[#bb7c05] peer-focus:font-medium peer-focus:translate-y-0'
-                    }`}
-                  >
-                    İlçe
-                  </label>
-                </div>
+                <CustomSelect
+                  id="district"
+                  label="İlçe"
+                  value={formData.district}
+                  onChange={(value) => setFormData({ ...formData, district: value })}
+                  options={[
+                    { value: 'Sultanbeyli', label: 'Sultanbeyli' },
+                    { value: 'Pendik', label: 'Pendik' },
+                  ]}
+                  placeholder="İlçe Seçin"
+                  required
+                />
               </div>
 
               {/* Full Address with Floating Label */}
