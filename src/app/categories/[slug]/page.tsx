@@ -50,13 +50,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
   return (
     <div className="min-h-screen bg-gray-100 pb-20 md:pb-6">
       {/* Product List */}
-      <div className="nav" style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        padding: '0 20px 0 60px',
-        animation: 'fadeIn 0.6s ease-out'
-      }}>
+      <div className="nav">
         {isLoading ? (
           // Loading state
           Array.from({ length: 4 }).map((_, index) => (
@@ -82,25 +76,9 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
             <div
               key={product.id}
               className={`nav__item ${isSandwiches ? '-sandwich' : ''} ${isDrinks ? '-drink' : ''} ${isToasts ? '-toast' : ''}`}
-              style={{
-                position: 'relative',
-                background: 'linear-gradient(145deg, #ffffff 0%, #fefefe 100%)',
-                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(187, 124, 5, 0.18), 0 1px 4px rgba(0, 0, 0, 0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                minHeight: isSandwiches ? '110px' : isDrinks ? '85px' : isToasts ? '95px' : '135px',
-                padding: isSandwiches ? '14px 16px' : isDrinks ? '12px 16px' : isToasts ? '13px 16px' : '18px 16px',
-                borderRadius: '22px',
-                marginTop: '22px',
-                cursor: 'pointer',
-                transition: 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)',
-                border: '2px solid rgba(187, 124, 5, 0.2)',
-                overflow: 'visible',
-                transform: 'translateX(4px) scale(1.01)'
-              }}
             >
               {/* Background Effects */}
-              <div style={{
+              <div className="nav__bgGradient" style={{
                 content: '""',
                 position: 'absolute',
                 left: 0,
@@ -113,7 +91,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 borderRadius: '22px 0 0 22px'
               }}></div>
               
-              <div style={{
+              <div className="nav__leftBorder" style={{
                 content: '""',
                 position: 'absolute',
                 left: 0,
@@ -127,7 +105,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
               }}></div>
 
               {/* Product Image */}
-              <div style={{
+              <div className="nav__image" style={{
                 width: '115px',
                 height: '115px',
                 position: 'absolute',
@@ -173,9 +151,9 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                   color: '#7a7a7a',
                   fontSize: '10px',
                   lineHeight: 1.5,
-                  maxWidth: '85%',
+                  maxWidth: '80%',
                   fontWeight: 500,
-                  transition: 'color 0.3s ease'
+                  transition: 'all 0.4s ease'
                 }}>
                   {product.description}
                 </div>
@@ -212,7 +190,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                       borderRadius: '8px',
                       letterSpacing: '0.2px',
                       border: '1px solid rgba(187, 124, 5, 0.15)',
-                      textTransform: 'lowercase'
+                      textTransform: 'lowercase',
+                      transition: 'all 0.3s ease'
                     }}>
                       {product.extraText}
                     </span>
@@ -302,13 +281,54 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           }
         }
 
+        .nav {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          padding: 0 20px 0 60px;
+          animation: fadeIn 0.6s ease-out;
+        }
+        
+        .nav__item {
+          position: relative;
+          background: linear-gradient(145deg, #ffffff 0%, #fefefe 100%);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(187, 124, 5, 0.18), 0 1px 4px rgba(0, 0, 0, 0.1);
+          display: flex;
+          align-items: center;
+          min-height: 135px;
+          padding: 18px 16px;
+          border-radius: 22px;
+          margin-top: 22px;
+          cursor: pointer;
+          transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 2px solid rgba(187, 124, 5, 0.2);
+          overflow: visible;
+          transform: translateX(4px) scale(1.01);
+        }
+        
+        .nav__item.-sandwich {
+          min-height: 110px;
+          padding: 14px 16px;
+        }
+        
+        .nav__item.-drink {
+          min-height: 85px;
+          padding: 12px 16px;
+        }
+        
+        .nav__item.-toast {
+          min-height: 95px;
+          padding: 13px 16px;
+        }
+
         @media (max-width: 768px) {
           .nav {
-            padding: 0 18px 0 45px;
+            padding: 0 18px 0 65px;
             gap: 12px;
           }
           
           .nav__item {
+            width: 100%;
             min-height: 125px;
             padding: 16px 14px;
             margin-top: 20px;
@@ -359,25 +379,73 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           .nav {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding: 0 0 30px 0;
+            column-gap: 100px;
+            row-gap: 24px;
+            padding: 24px;
+            max-width: 80rem;
+            margin: 0 auto;
           }
           
           .nav__item {
             min-height: 110px;
             padding: 12px 12px 12px 55px;
-            margin-top: 20px;
+            margin-top: 0;
             border-radius: 18px;
             transform: translateX(0) scale(1);
           }
           
           .nav__item:nth-child(2n) {
-            margin-left: 40px;
+            margin-left: 0;
           }
           
           .nav__item:hover {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22), 0 8px 20px rgba(0, 0, 0, 0.16), 0 4px 10px rgba(187, 124, 5, 0.2);
+            transform: translateY(-6px) translateX(2px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.18), 0 5px 12px rgba(187, 124, 5, 0.3);
+            border-color: rgba(187, 124, 5, 0.5);
+            background: linear-gradient(145deg, #ffffff 0%, #fffef8 100%);
+          }
+          
+          .nav__item:hover .nav__image {
+            transform: translate(-48%, -52%) rotate(2deg) scale(1.05);
+            filter: drop-shadow(0 4px 8px rgba(187, 124, 5, 0.25));
+          }
+          
+          .nav__item:hover .nav__title {
+            color: #d49624;
+            transform: translateX(4px);
+            letter-spacing: 0.8px;
+          }
+          
+          .nav__item:hover .nav__subtitle {
+            color: #5a5a5a;
+            transform: translateX(3px);
+          }
+          
+          .nav__item:hover .nav__price {
+            transform: translateY(-2px) scale(1.06);
+            color: #d49624;
+            text-shadow: 0 2px 6px rgba(187, 124, 5, 0.25);
+          }
+          
+          .nav__item:hover .nav__actionIcon {
+            transform: scale(1.12) rotate(8deg);
+            box-shadow: 0 6px 18px rgba(187, 124, 5, 0.55), 0 3px 9px rgba(187, 124, 5, 0.4);
+          }
+          
+          .nav__item:hover .nav__bgGradient {
+            width: 60%;
+            background: radial-gradient(ellipse at left, rgba(187, 124, 5, 0.12) 0%, rgba(212, 150, 36, 0.08) 40%, transparent 80%);
+          }
+          
+          .nav__item:hover .nav__leftBorder {
+            width: 5px;
+            opacity: 1;
+          }
+          
+          .nav__item:hover .nav__suffix {
+            transform: scale(1.02);
+            background: rgba(187, 124, 5, 0.12);
+            border-color: rgba(187, 124, 5, 0.2);
           }
           
           .nav__item.-sandwich {
@@ -427,6 +495,14 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
             width: 34px;
             height: 34px;
             padding: 8px;
+          }
+        }
+
+        @media (min-width: 1400px) {
+          .nav {
+            max-width: 80rem;
+            column-gap: 100px;
+            row-gap: 30px;
           }
         }
       `}</style>
