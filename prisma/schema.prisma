@@ -79,6 +79,8 @@ model Address {
   city        String
   district    String
   fullAddress String
+  latitude    Float?   // Harita konumu
+  longitude   Float?   // Harita konumu
   isDefault   Boolean  @default(false)
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])

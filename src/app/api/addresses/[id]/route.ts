@@ -29,7 +29,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { title, fullName, phone, city, district, fullAddress, isDefault } = body
+    const { title, fullName, phone, city, district, fullAddress, latitude, longitude, isDefault } = body
 
     // Validasyon
     if (!title || !fullName || !phone || !city || !district || !fullAddress) {
@@ -87,6 +87,8 @@ export async function PUT(
         city,
         district,
         fullAddress,
+        latitude: latitude || null,
+        longitude: longitude || null,
         isDefault,
       },
     })

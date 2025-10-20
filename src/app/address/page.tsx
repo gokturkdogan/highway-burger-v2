@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -9,6 +9,20 @@ import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, Star, Phone, User } from 
 import { useToast } from '@/contexts/ToastContext'
 import ConfirmModal from '@/components/ConfirmModal'
 import CustomSelect from '@/components/CustomSelect'
+import dynamic from 'next/dynamic'
+
+// Leaflet'i sadece client-side render et
+const LocationPicker = dynamic(() => import('@/components/LocationPicker'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[300px] bg-gray-100 rounded-xl flex items-center justify-center border-2 border-gray-200">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#bb7c05] border-t-transparent mx-auto mb-2"></div>
+        <p className="text-sm text-gray-600">Harita yükleniyor...</p>
+      </div>
+    </div>
+  )
+})
 
 interface Address {
   id: number
@@ -18,6 +32,8 @@ interface Address {
   city: string
   district: string
   fullAddress: string
+  latitude?: number | null
+  longitude?: number | null
   isDefault: boolean
 }
 
@@ -37,6 +53,8 @@ export default function AddressPage() {
     city: 'İstanbul',
     district: '',
     fullAddress: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
     isDefault: false,
   })
 
@@ -113,6 +131,8 @@ export default function AddressPage() {
       city: 'İstanbul',
       district: '',
       fullAddress: '',
+      latitude: null,
+      longitude: null,
       isDefault: false,
     })
   }
@@ -126,6 +146,8 @@ export default function AddressPage() {
       city: address.city,
       district: address.district,
       fullAddress: address.fullAddress,
+      latitude: address.latitude || null,
+      longitude: address.longitude || null,
       isDefault: address.isDefault,
     })
     setIsAddingNew(false)
@@ -145,6 +167,10 @@ export default function AddressPage() {
     setIsAddingNew(false)
     setEditingId(null)
   }
+
+  const handleLocationChange = useCallback((location: { lat: number; lng: number }) => {
+    setFormData(prev => ({ ...prev, latitude: location.lat, longitude: location.lng }))
+  }, [])
 
   const getTitleIcon = (title: string) => {
     switch (title.toLowerCase()) {
@@ -364,6 +390,12 @@ export default function AddressPage() {
                   Adres (Mahalle, sokak, bina no, daire no)
                 </label>
               </div>
+
+              {/* Location Picker */}
+              <LocationPicker
+                value={formData.latitude && formData.longitude ? { lat: formData.latitude, lng: formData.longitude } : null}
+                onChange={handleLocationChange}
+              />
 
               {/* Default Address Checkbox */}
               <div className="flex items-center gap-3 bg-gradient-to-br from-[#bb7c05]/5 to-[#d49624]/5 p-4 rounded-xl border border-[#bb7c05]/20">
