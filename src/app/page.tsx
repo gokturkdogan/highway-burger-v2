@@ -54,11 +54,57 @@ export default function HomePage() {
   const categoryCards = categories || fallbackCategories
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-20">
+    <div className="min-h-screen bg-gray-100 pb-20 md:pb-6">
+      {/* Hero Section - Desktop Only */}
+      <div className="hidden md:block relative overflow-hidden bg-gradient-to-br from-[#bb7c05] via-[#d49624] to-[#bb7c05] py-8 mb-6">
+        {/* Animated Background Shapes */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 -right-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-1/2 -left-1/4 w-64 h-64 bg-black/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
+          <div className="inline-block mb-3 px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs font-medium animate-fadeIn">
+            🍔 Türkiye'nin En Lezzetli Burgerleri
+          </div>
+          
+          <h1 className="text-3xl lg:text-4xl font-black text-white mb-3 animate-fadeIn leading-tight" style={{animationDelay: '0.1s'}}>
+            En Lezzetli Burgerler Kapınızda!
+          </h1>
+          
+          <p className="text-white/90 text-sm max-w-xl mx-auto animate-fadeIn" style={{animationDelay: '0.2s'}}>
+            Taze malzemeler, özel soslar ve hızlı teslimat • 15dk • ⭐ 4.8/5
+          </p>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="px-3 md:px-6 py-6">
+        {/* Section Title - Desktop */}
+        <div className="hidden md:block mb-8">
+          <div className="max-w-7xl mx-auto relative">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-[#bb7c05] to-[#d49624] rounded-full animate-pulse"></div>
+              <div>
+                <h2 className="text-2xl font-bold text-[#2c3e50] flex items-center gap-2">
+                  Kategoriler
+                  <span className="inline-block w-2 h-2 bg-[#bb7c05] rounded-full animate-ping"></span>
+                </h2>
+                <p className="text-gray-600 text-sm mt-1 flex items-center gap-2">
+                  <span>Favorinizi seçin</span>
+                  <span className="text-[#bb7c05]">✨</span>
+                </p>
+              </div>
+            </div>
+            
+            {/* Decorative Elements */}
+            <div className="absolute -top-2 -right-2 w-20 h-20 bg-[#bb7c05]/5 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute -bottom-2 left-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-[#bb7c05]/20 to-transparent"></div>
+          </div>
+        </div>
+
         {/* Category Cards - Enhanced Design */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-w-7xl mx-auto pb-15 animate-fadeIn">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 max-w-7xl mx-auto pb-15 animate-fadeIn">
           {isLoading ? (
             // Loading state
             Array.from({ length: 4 }).map((_, index) => (
@@ -87,12 +133,15 @@ export default function HomePage() {
 
               return (
                 <Link key={category.id} href={`/categories/${category.slug}`} className="group">
-                  <div className="relative bg-gradient-to-br from-white to-gray-50 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer min-h-[200px] md:min-h-[180px] lg:min-h-[160px] p-3 rounded-2xl mt-16 md:mt-14 lg:mt-12 border border-gray-200 group-hover:-translate-y-4 group-hover:scale-105 group-hover:border-[#bb7c05]/30 mb-2" style={{boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1)'}}>
+                  <div className="relative bg-gradient-to-br from-white to-gray-50 shadow-xl transition-all duration-500 cursor-pointer min-h-[200px] md:min-h-[180px] lg:min-h-[160px] p-3 rounded-2xl mt-16 md:mt-14 lg:mt-12 border border-gray-200 group-hover:-translate-y-4 md:group-hover:-translate-y-2 group-hover:scale-105 md:group-hover:scale-102 group-hover:border-[#bb7c05]/30 mb-2 group-hover:shadow-[0_20px_50px_rgba(187,124,5,0.25),0_10px_25px_rgba(0,0,0,0.15)]" style={{boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1)'}}>
                     {/* Background Gradient Overlay */}
-                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-radial from-[#bb7c05]/6 via-[#d49624]/3 to-transparent opacity-100 transition-all duration-500 rounded-t-2xl group-hover:from-[#bb7c05]/10 group-hover:via-[#d49624]/6"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-radial from-[#bb7c05]/6 via-[#d49624]/3 to-transparent opacity-100 transition-all duration-500 rounded-t-2xl group-hover:from-[#bb7c05]/12 group-hover:via-[#d49624]/8 group-hover:h-full"></div>
                     
-                    {/* Border Gradient */}
-                    <div className="absolute inset-[-1px] bg-gradient-to-r from-[#bb7c05]/20 via-[#d49624]/30 to-[#bb7c05]/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                    {/* Border Gradient - Animated */}
+                    <div className="absolute inset-[-2px] bg-gradient-to-r from-[#bb7c05]/20 via-[#d49624]/30 to-[#bb7c05]/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 group-hover:animate-pulse"></div>
+                    
+                    {/* Shine Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/0 group-hover:via-white/10 transition-all duration-700 rounded-2xl"></div>
                     
                     {/* Category Image */}
                     <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[115px] md:w-[100px] lg:w-[90px] transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3">
