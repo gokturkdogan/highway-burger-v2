@@ -132,68 +132,67 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
           </div>
 
           {/* Content */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            {/* Product Image */}
-            <div className="relative w-full h-56 md:h-64 mb-6 bg-gradient-to-br from-[#bb7c05]/5 to-[#d49624]/5 rounded-2xl overflow-hidden">
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            {/* Product Image - Compact */}
+            <div className="relative w-full h-48 mb-4 bg-gradient-to-br from-[#bb7c05]/5 to-[#d49624]/5 rounded-xl overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center">
                 <Image
                   src={product.imageUrl || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400'}
                   alt={product.name}
-                  width={300}
-                  height={300}
-                  className="object-contain drop-shadow-2xl"
+                  width={200}
+                  height={200}
+                  className="object-contain drop-shadow-xl"
                 />
               </div>
-              {/* Decorative Elements */}
-              <div className="absolute top-4 right-4 w-20 h-20 bg-[#bb7c05]/10 rounded-full blur-2xl"></div>
-              <div className="absolute bottom-4 left-4 w-16 h-16 bg-[#d49624]/10 rounded-full blur-2xl"></div>
               
               {/* Desktop Close Button */}
               <button
                 onClick={handleClose}
-                className="hidden md:flex absolute top-3 right-3 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg items-center justify-center transition-all hover:scale-110 z-10"
+                className="hidden md:flex absolute top-2 right-2 w-8 h-8 rounded-full bg-white/95 hover:bg-white shadow-md items-center justify-center transition-all hover:scale-110 z-10"
               >
-                <X className="w-5 h-5 text-gray-700" />
+                <X className="w-4 h-4 text-gray-700" />
               </button>
             </div>
 
-            {/* Product Info */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-[#2c3e50] mb-3">
+            {/* Product Info - Minimal */}
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-[#2c3e50] mb-2">
                 {product.name}
               </h2>
-              <p className="text-gray-600 leading-relaxed">
+              
+              {/* Description Badge */}
+              <div className="inline-block px-4 py-2 rounded-xl text-sm bg-gradient-to-r from-[#bb7c05]/10 to-[#d49624]/10 text-gray-700 border border-[#bb7c05]/20">
                 {product.description}
-              </p>
+              </div>
             </div>
 
-            {/* Price Options */}
+            {/* Price Options - Compact */}
             {product.secondPrice && (
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-[#2c3e50] mb-3">
-                  Seçenek Seçin
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-gray-500 mb-2">
+                  Boyut Seçin
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {/* First Price */}
                   <button
                     onClick={() => setSelectedPrice('first')}
-                    className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                    className={`relative p-3 rounded-lg border-2 transition-all duration-200 ${
                       selectedPrice === 'first'
-                        ? 'border-[#bb7c05] bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 shadow-lg scale-105'
-                        : 'border-gray-200 hover:border-[#bb7c05]/50 hover:bg-gray-50'
+                        ? 'border-[#bb7c05] bg-[#bb7c05]/5 shadow-md scale-[1.02]'
+                        : 'border-gray-200 hover:border-[#bb7c05]/30'
                     }`}
                   >
                     <div className="text-center">
-                      <div className="text-lg font-bold text-[#bb7c05]">{product.price}₺</div>
+                      <div className="text-base font-bold text-[#bb7c05]">{product.price}₺</div>
                       {product.extraText && (
-                        <div className="text-xs text-gray-600 mt-1">
+                        <div className="text-xs text-gray-500 mt-0.5">
                           {product.extraText.split('/')[0]}
                         </div>
                       )}
                     </div>
                     {selectedPrice === 'first' && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-[#bb7c05] rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#bb7c05] rounded-full flex items-center justify-center">
+                        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
@@ -203,23 +202,23 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
                   {/* Second Price */}
                   <button
                     onClick={() => setSelectedPrice('second')}
-                    className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                    className={`relative p-3 rounded-lg border-2 transition-all duration-200 ${
                       selectedPrice === 'second'
-                        ? 'border-[#bb7c05] bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 shadow-lg scale-105'
-                        : 'border-gray-200 hover:border-[#bb7c05]/50 hover:bg-gray-50'
+                        ? 'border-[#bb7c05] bg-[#bb7c05]/5 shadow-md scale-[1.02]'
+                        : 'border-gray-200 hover:border-[#bb7c05]/30'
                     }`}
                   >
                     <div className="text-center">
-                      <div className="text-lg font-bold text-[#bb7c05]">{product.secondPrice}₺</div>
+                      <div className="text-base font-bold text-[#bb7c05]">{product.secondPrice}₺</div>
                       {product.extraText && (
-                        <div className="text-xs text-gray-600 mt-1">
+                        <div className="text-xs text-gray-500 mt-0.5">
                           {product.extraText.split('/')[1]}
                         </div>
                       )}
                     </div>
                     {selectedPrice === 'second' && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-[#bb7c05] rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#bb7c05] rounded-full flex items-center justify-center">
+                        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
@@ -229,33 +228,33 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
               </div>
             )}
 
-            {/* Quantity Selector */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-[#2c3e50] mb-3">
+            {/* Quantity Selector - Compact */}
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-gray-500 mb-2">
                 Adet
               </label>
-              <div className="flex items-center justify-center gap-4 bg-gray-50 rounded-xl p-3">
+              <div className="flex items-center justify-center gap-3 bg-gray-50 rounded-lg p-2">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-full bg-white border-2 border-gray-200 hover:border-[#bb7c05] transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                  className="w-8 h-8 rounded-lg bg-white border border-gray-200 hover:border-[#bb7c05] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Minus className="w-5 h-5 text-gray-600" />
+                  <Minus className="w-4 h-4 text-gray-600" />
                 </button>
-                <div className="text-2xl font-bold text-[#2c3e50] min-w-[60px] text-center">
+                <div className="text-xl font-bold text-[#2c3e50] min-w-[50px] text-center">
                   {quantity}
                 </div>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 rounded-full bg-white border-2 border-gray-200 hover:border-[#bb7c05] transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md"
+                  className="w-8 h-8 rounded-lg bg-white border border-gray-200 hover:border-[#bb7c05] transition-all flex items-center justify-center"
                 >
-                  <Plus className="w-5 h-5 text-gray-600" />
+                  <Plus className="w-4 h-4 text-gray-600" />
                 </button>
               </div>
             </div>
 
-            {/* Add to Cart Button - Sticky on Mobile */}
-            <div className="md:relative md:mt-0 sticky bottom-0 left-0 right-0 bg-white pt-4 pb-2 md:pb-0 -mx-6 px-6 md:mx-0 md:px-0 border-t md:border-t-0 border-gray-200">
+            {/* Add to Cart Button */}
+            <div className="md:relative md:mt-0 sticky bottom-0 left-0 right-0 bg-white pt-4 pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 border-t md:border-t-0 border-gray-100">
               <button
                 onClick={handleAddToCart}
                 className="w-full bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white px-4 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
