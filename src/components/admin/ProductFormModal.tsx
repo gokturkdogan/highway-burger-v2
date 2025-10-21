@@ -108,7 +108,7 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
   }
 
   const handleUpload = async () => {
-    if (!selectedFile) return
+    if (!selectedFile) return null
 
     setIsUploading(true)
     try {
@@ -118,12 +118,13 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
 
       const res = await axios.post('/api/upload', formData)
       
-      setFormData(prev => ({ ...prev, imageUrl: res.data.url }))
       toast.success('Görsel yüklendi', 2000)
       setSelectedFile(null)
+      return res.data.url // URL'i return et
     } catch (error) {
       console.error('Upload error:', error)
       toast.error('Görsel yüklenemedi', 3000)
+      return null
     } finally {
       setIsUploading(false)
     }
@@ -132,15 +133,23 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // If file is selected but not uploaded yet
+    // If file is selected but not uploaded yet, upload first
+    let uploadedUrl = formData.imageUrl
     if (selectedFile) {
-      await handleUpload()
+      const url = await handleUpload()
+      if (url) {
+        uploadedUrl = url
+      } else {
+        // Upload failed, don't proceed
+        return
+      }
     }
 
-    // Wait a bit for upload to complete
-    setTimeout(() => {
-      saveMutation.mutate(formData)
-    }, selectedFile ? 500 : 0)
+    // Save product with the uploaded image URL
+    saveMutation.mutate({
+      ...formData,
+      imageUrl: uploadedUrl
+    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -236,7 +245,12 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
               {selectedFile && !isUploading && (
                 <button
                   type="button"
-                  onClick={handleUpload}
+                  onClick={async () => {
+                    const url = await handleUpload()
+                    if (url) {
+                      setFormData(prev => ({ ...prev, imageUrl: url }))
+                    }
+                  }}
                   className="mt-2 w-full px-4 py-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition-colors font-medium"
                 >
                   Yükle
