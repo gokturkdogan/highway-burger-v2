@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const folder = formData.get('folder') as string || 'products'
+    const slug = formData.get('slug') as string || ''
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
@@ -31,12 +32,22 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
+    // Get file extension
+    const fileExtension = file.name.split('.').pop() || 'jpg'
+    
+    // Create filename from slug or use timestamp
+    const fileName = slug 
+      ? `${slug}.${fileExtension}` 
+      : `${Date.now()}.${fileExtension}`
+
     // Upload to Cloudinary
     const result = await new Promise<any>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: `highway-burger/${folder}`,
+          public_id: slug || `upload-${Date.now()}`, // Slug'ı dosya adı olarak kullan
           resource_type: 'auto',
+          overwrite: true, // Aynı slug varsa üzerine yaz
           transformation: [
             { width: 800, height: 800, crop: 'limit' },
             { quality: 'auto:good' },

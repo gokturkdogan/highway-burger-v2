@@ -112,11 +112,12 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
 
     setIsUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-      formData.append('folder', 'products')
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', selectedFile)
+      uploadFormData.append('folder', 'products') // Klasör: products
+      uploadFormData.append('slug', formData.slug) // Slug'ı gönder (dosya adı olacak)
 
-      const res = await axios.post('/api/upload', formData)
+      const res = await axios.post('/api/upload', uploadFormData)
       
       toast.success('Görsel yüklendi', 2000)
       setSelectedFile(null)
