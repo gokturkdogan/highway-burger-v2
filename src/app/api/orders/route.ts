@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmationEmail } from '@/lib/email'
+import { orderEvents } from '@/lib/events'
 
 export async function POST(request: Request) {
   try {
@@ -40,6 +41,24 @@ export async function POST(request: Request) {
     })
 
     console.log('✅ Order created:', order.id, 'Payment method:', paymentMethod, 'Items:', items?.length)
+
+    // SSE ile admin'e bildir
+    try {
+      console.log('📢 About to emit order event:', order.id)
+      orderEvents.emit({
+        type: 'new_order',
+        order: {
+          id: order.id,
+          total: order.total,
+          deliveryName: order.deliveryName,
+          createdAt: order.createdAt,
+        }
+      })
+      console.log('✅ Event emitted successfully')
+    } catch (sseError) {
+      console.error('❌ SSE emit error:', sseError)
+      // SSE hatası sipariş oluşturmayı engellemez
+    }
 
     // Email gönder
     const emailAddress = session?.user?.email || address?.email

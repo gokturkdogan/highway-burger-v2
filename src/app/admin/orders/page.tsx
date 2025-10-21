@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { 
@@ -11,10 +11,14 @@ import {
   Package,
   Eye,
   Filter,
-  Search
+  Search,
+  Volume2,
+  VolumeX,
+  Bell
 } from 'lucide-react'
 import { useToast } from '@/contexts/ToastContext'
 import OrderDetailModal from '@/components/admin/OrderDetailModal'
+import { useOrderAlarm } from '@/hooks/useOrderAlarm'
 
 interface Order {
   id: number
@@ -58,6 +62,7 @@ export default function AdminOrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const { soundEnabled, toggleSound, playTestSound } = useOrderAlarm()
 
   // Fetch ALL orders (no filter on API)
   const { data: allOrders, isLoading } = useQuery<Order[]>({
@@ -160,8 +165,41 @@ export default function AdminOrdersPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-[#2c3e50] mb-2">Sipariş Yönetimi</h1>
-          <p className="text-gray-600">Tüm siparişleri görüntüleyin ve yönetin</p>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#2c3e50] mb-2">Sipariş Yönetimi</h1>
+              <p className="text-gray-600">Tüm siparişleri görüntüleyin ve yönetin</p>
+            </div>
+            
+            {/* Ses Kontrol Butonları */}
+            <div className="flex items-center gap-2 lg:gap-3">
+              <button
+                onClick={playTestSound}
+                className="flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+              >
+                <Bell className="w-4 h-4" />
+                <span className="text-xs lg:text-sm font-medium">Test</span>
+              </button>
+              
+              <button
+                onClick={toggleSound}
+                className={`flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 rounded-xl transition-colors ${
+                  soundEnabled 
+                    ? 'bg-green-500 text-white hover:bg-green-600' 
+                    : 'bg-gray-500 text-white hover:bg-gray-600'
+                }`}
+              >
+                {soundEnabled ? (
+                  <Volume2 className="w-4 h-4" />
+                ) : (
+                  <VolumeX className="w-4 h-4" />
+                )}
+                <span className="text-xs lg:text-sm font-medium">
+                  {soundEnabled ? 'Ses Açık' : 'Ses Kapalı'}
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Stats Cards */}

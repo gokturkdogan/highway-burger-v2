@@ -107,8 +107,8 @@ export async function PATCH(request: Request) {
               name: item.product.name,
               quantity: item.quantity,
               price: item.price,
-              extraText: item.product.extraText,
-              selectedOption: item.selectedOption,
+              extraText: item.product.extraText || undefined,
+              selectedOption: item.selectedOption || undefined,
             })),
             shippingAddress: {
               fullName: order.deliveryName || name,
