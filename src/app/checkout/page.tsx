@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { MapPin, Plus, Edit2, CheckCircle, Truck, Clock, User, Phone, ArrowRight, Tag } from 'lucide-react'
+import { MapPin, Plus, Edit2, CheckCircle, Truck, Clock, User, Phone, ArrowRight, Tag, ShoppingCart, CreditCard, Bike } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/contexts/ToastContext'
 import AddressModal from '@/components/AddressModal'
@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<string>('')
   const [showPaymentError, setShowPaymentError] = useState(false)
+  const [currentStep, setCurrentStep] = useState(2) // 1: Sepet, 2: Teslimat, 3: Ödeme
   const paymentMethodRef = useRef<HTMLDivElement>(null)
 
   const items = useCart((state) => state.items)
@@ -95,6 +96,32 @@ export default function CheckoutPage() {
     }
   }, [addresses, selectedAddressId])
 
+  // Progress step'lerini güncelle
+  useEffect(() => {
+    const deliveryAddress = status === 'authenticated' 
+      ? addresses?.find(a => a.id === selectedAddressId)
+      : guestAddress
+    
+    if (deliveryAddress) {
+      setCurrentStep(2) // Teslimat adresi seçildi
+    }
+  }, [status, addresses, selectedAddressId, guestAddress])
+
+  useEffect(() => {
+    if (paymentMethod) {
+      setCurrentStep(3) // Ödeme yöntemi seçildi
+    }
+  }, [paymentMethod])
+
+  // Progress bar navigation
+  const handleStepClick = (step: number) => {
+    if (step === 1) {
+      // Sepet'e geri dön
+      router.push('/cart')
+    }
+    // Diğer step'ler için şimdilik sadece görsel feedback
+  }
+
   // Adres ekleme mutation
   const addAddressMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -143,108 +170,22 @@ export default function CheckoutPage() {
     }
 
     try {
-      // Eğer Online Kredi Kartı değilse, sadece sipariş oluştur
-      if (paymentMethod !== 'online') {
-        toast.info('Sipariş oluşturuluyor...', 2000)
-
-        // Sipariş oluştur
-        const order = await axios.post('/api/orders', {
-          total: getTotalWithDiscount(),
-          paymentMethod: paymentMethod === 'cash' ? 'Kapıda Nakit' : 'Kapıda Kredi Kartı',
-          address: deliveryAddress,
-          items: items,
-        })
-
-        toast.success('Sipariş başarıyla oluşturuldu!', 3000)
-        
-        // Başarı sayfasına yönlendir
-        setTimeout(() => {
-          router.push('/payment/success')
-        }, 1500)
-        
-        return
-      }
-
-      // Online ödeme akışı
-      toast.info('Ödeme sayfası hazırlanıyor...', 2000)
+      toast.info('Sipariş oluşturuluyor...', 2000)
 
       // Sipariş oluştur
       const order = await axios.post('/api/orders', {
         total: getTotalWithDiscount(),
-        paymentMethod: 'Online Kredi Kartı',
+        paymentMethod: paymentMethod === 'cash' ? 'Kapıda Nakit' : 'Kapıda Kredi Kartı',
         address: deliveryAddress,
         items: items,
       })
 
-      const orderId = order.data.id
-
-      // Basket items
-      const basketItems = items.map((item: any, index: number) => ({
-        id: String(index + 1),
-        name: item.name,
-        category1: 'Food',
-        itemType: 'PHYSICAL',
-        price: String((item.price * item.quantity).toFixed(2)),
-      }))
-
-      // Buyer
-      const nameParts = deliveryAddress!.fullName.split(' ')
-      const buyer = {
-        id: String(session?.user?.id || `guest_${orderId}`),
-        name: nameParts[0] || 'Guest',
-        surname: nameParts.slice(1).join(' ') || 'User',
-        gsmNumber: deliveryAddress!.phone || '+905555555555',
-        email: session?.user?.email || deliveryAddress!.email || 'guest@example.com',
-        identityNumber: '11111111111',
-        registrationAddress: deliveryAddress!.fullAddress,
-        ip: '85.34.78.112',
-        city: deliveryAddress!.city,
-        country: 'Turkey',
-      }
-
-      // Address
-      const shippingAddress = {
-        contactName: deliveryAddress!.fullName,
-        city: deliveryAddress!.city,
-        country: 'Turkey',
-        address: deliveryAddress!.fullAddress,
-      }
-
-      // İyzico payment request
-      const paymentRequest = {
-        locale: 'tr',
-        conversationId: String(orderId),
-        price: String(getTotalWithDiscount().toFixed(2)),
-        paidPrice: String(getTotalWithDiscount().toFixed(2)),
-        currency: 'TRY',
-        basketId: String(orderId),
-        paymentGroup: 'PRODUCT',
-        callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/iyzico/callback`,
-        enabledInstallments: [1],
-        buyer: buyer,
-        shippingAddress: shippingAddress,
-        billingAddress: shippingAddress,
-        basketItems: basketItems,
-      }
-
-      console.log('Payment request:', paymentRequest)
-
-      const response = await axios.post('/api/iyzico/init', paymentRequest)
-
-      console.log('Payment response:', response.data)
-
-      if (response.data.status === 'success') {
-        // Ödeme formunu yeni sekmede aç
-        const paymentWindow = window.open('', '_blank')
-        if (paymentWindow) {
-          paymentWindow.document.write(response.data.checkoutFormContent)
-          paymentWindow.document.close()
-        } else {
-          toast.error('Pop-up engelleyicinizi kapatın', 4000)
-        }
-      } else {
-        toast.error(response.data.errorMessage || 'Ödeme başlatılamadı', 4000)
-      }
+      toast.success('Sipariş başarıyla oluşturuldu!', 3000)
+      
+      // Başarı sayfasına yönlendir
+      setTimeout(() => {
+        router.push('/payment/success')
+      }, 1500)
     } catch (error) {
       console.error('Payment error:', error)
       toast.error('Bir hata oluştu. Lütfen tekrar deneyin.', 4000)
@@ -290,6 +231,102 @@ export default function CheckoutPage() {
             <div>
               <h1 className="text-3xl font-bold text-[#2c3e50] mb-1">Teslimat Bilgileri</h1>
               <p className="text-gray-600">Adres seçin ve siparişinizi tamamlayın</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="px-4 md:px-6 max-w-7xl mx-auto mb-8">
+        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+          <div className="flex items-center justify-between">
+            {/* Step 1: Sepet */}
+            <button
+              onClick={() => handleStepClick(1)}
+              className={`flex items-center gap-3 transition-all duration-500 hover:scale-105 ${
+                currentStep >= 1 ? 'opacity-100' : 'opacity-50'
+              }`}
+            >
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                currentStep >= 1 
+                  ? 'bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white shadow-lg' 
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                <ShoppingCart className="w-5 h-5" />
+              </div>
+              <div className="hidden sm:block">
+                <div className={`text-sm font-bold transition-colors duration-300 ${
+                  currentStep >= 1 ? 'text-[#bb7c05]' : 'text-gray-500'
+                }`}>
+                  Sepet
+                </div>
+                <div className="text-xs text-gray-500">Ürünleriniz</div>
+              </div>
+            </button>
+
+            {/* Connector Line 1 */}
+            <div className={`flex-1 h-0.5 mx-4 transition-all duration-500 ${
+              currentStep >= 2 ? 'bg-gradient-to-r from-[#bb7c05] to-[#d49624]' : 'bg-gray-200'
+            }`}></div>
+
+            {/* Step 2: Teslimat */}
+            <div className={`flex items-center gap-3 transition-all duration-500 ${
+              currentStep >= 2 ? 'opacity-100' : 'opacity-50'
+            }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                currentStep >= 2 
+                  ? 'bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white shadow-lg' 
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                <Bike className="w-5 h-5" />
+              </div>
+              <div className="hidden sm:block">
+                <div className={`text-sm font-bold transition-colors duration-300 ${
+                  currentStep >= 2 ? 'text-[#bb7c05]' : 'text-gray-500'
+                }`}>
+                  Teslimat
+                </div>
+                <div className="text-xs text-gray-500">Adres bilgileri</div>
+              </div>
+            </div>
+
+            {/* Connector Line 2 */}
+            <div className={`flex-1 h-0.5 mx-4 transition-all duration-500 ${
+              currentStep >= 3 ? 'bg-gradient-to-r from-[#bb7c05] to-[#d49624]' : 'bg-gray-200'
+            }`}></div>
+
+            {/* Step 3: Ödeme */}
+            <div className={`flex items-center gap-3 transition-all duration-500 ${
+              currentStep >= 3 ? 'opacity-100' : 'opacity-50'
+            }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                currentStep >= 3 
+                  ? 'bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white shadow-lg' 
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div className="hidden sm:block">
+                <div className={`text-sm font-bold transition-colors duration-300 ${
+                  currentStep >= 3 ? 'text-[#bb7c05]' : 'text-gray-500'
+                }`}>
+                  Ödeme
+                </div>
+                <div className="text-xs text-gray-500">Ödeme yöntemi</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Progress Indicator */}
+          <div className="sm:hidden mt-4">
+            <div className="flex justify-center text-xs text-gray-500 mb-2">
+              <span>Adım {currentStep} / 3</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-[#bb7c05] to-[#d49624] h-2 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${(currentStep / 3) * 100}%` }}
+              ></div>
             </div>
           </div>
         </div>
@@ -570,34 +607,30 @@ export default function CheckoutPage() {
                 </div>
               </button>
 
-              {/* Online Kredi Kartı */}
-              <button
-                onClick={() => {
-                  setPaymentMethod('online')
-                  setShowPaymentError(false)
-                }}
-                className={`p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
-                  paymentMethod === 'online'
-                    ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.02]'
-                    : 'bg-white border-gray-200 hover:border-[#bb7c05]/30 hover:shadow-xl'
-                }`}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-3 ${
-                    paymentMethod === 'online'
-                      ? 'bg-gradient-to-br from-[#bb7c05] to-[#d49624]'
-                      : 'bg-gray-100'
-                  }`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${paymentMethod === 'online' ? 'text-white' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
+              {/* Online Kredi Kartı - Disabled */}
+              <div className="relative">
+                <button
+                  disabled
+                  className="p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 bg-gray-50 border-gray-200 cursor-not-allowed opacity-60"
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-3 bg-gray-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                    <h3 className="font-bold mb-1 text-gray-500">
+                      Online Kredi Kartı
+                    </h3>
+                    <p className="text-xs text-gray-500">Şimdi güvenli ödeme yapın</p>
                   </div>
-                  <h3 className={`font-bold mb-1 ${paymentMethod === 'online' ? 'text-[#bb7c05]' : 'text-[#2c3e50]'}`}>
-                    Online Kredi Kartı
-                  </h3>
-                  <p className="text-xs text-gray-600">Şimdi güvenli ödeme yapın</p>
+                </button>
+                
+                {/* Çok Yakında Badge */}
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-[#bb7c05] to-[#d49624] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
+                  Çok Yakında
                 </div>
-              </button>
+              </div>
               </div>
             </div>
           </div>

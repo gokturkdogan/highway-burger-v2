@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import prisma from './prisma'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -36,6 +37,27 @@ export async function sendOrderConfirmationEmail(
       return { success: true, message: 'Email skipped (no API key)' }
     }
 
+    // Store settings'den teslimat süresini al
+    const storeSettings = await prisma.storeSettings.findUnique({
+      where: { id: 1 },
+    })
+
+    // Teslimat süresini belirle
+    const getDeliveryTime = (deliveryStatus: string) => {
+      switch (deliveryStatus) {
+        case 'normal':
+          return '15-25 dakika'
+        case 'busy':
+          return '30-45 dakika'
+        case 'very_busy':
+          return '45-60 dakika'
+        default:
+          return '15-25 dakika'
+      }
+    }
+
+    const deliveryTime = getDeliveryTime(storeSettings?.deliveryStatus || 'normal')
+
     // Format price
     const formatPrice = (amount: number) => {
       return new Intl.NumberFormat('tr-TR', {
@@ -71,9 +93,9 @@ export async function sendOrderConfirmationEmail(
     }).join('')
 
     const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Highway Burger <onboarding@resend.dev>',
+      from: process.env.EMAIL_FROM || 'Highway Burger <noreply@highwayburger.com.tr>',
       to: [email],
-      subject: `🍔 Siparişiniz Alındı! #${orderData.orderId}`,
+      subject: `Siparişiniz Alındı! #${orderData.orderId}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -114,7 +136,7 @@ export async function sendOrderConfirmationEmail(
                         <div style="background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%); padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #bb7c05;">
                           <div style="font-size: 24px; margin-bottom: 8px;">⏰</div>
                           <div style="font-weight: 700; color: #bb7c05; font-size: 18px; margin-bottom: 5px;">Tahmini Teslimat</div>
-                          <div style="color: #2d3748; font-size: 20px; font-weight: 600;">15-25 dakika</div>
+                          <div style="color: #2d3748; font-size: 20px; font-weight: 600;">${deliveryTime}</div>
                         </div>
                         
                         <!-- Order Items -->
@@ -193,6 +215,147 @@ export async function sendOrderConfirmationEmail(
     return { success: true, data }
   } catch (error: any) {
     console.error('❌ Order email error:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+/**
+ * Yeni üye hoşgeldin maili gönder
+ */
+export async function sendWelcomeEmail(
+  email: string,
+  name: string
+) {
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      console.log('📧 [DEV] Welcome email would be sent to:', email)
+      console.log('   Name:', name)
+      return { success: true, message: 'Email skipped (no API key)' }
+    }
+
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'Highway Burger <noreply@highwayburger.com.tr>',
+      to: [email],
+      subject: `Highway Burger'e Hoşgeldiniz!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Hoşgeldiniz</title>
+          </head>
+          <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+              <tr>
+                <td align="center">
+                  <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    
+                    <!-- Welcome Header -->
+                    <tr>
+                      <td style="background: linear-gradient(135deg, #bb7c05 0%, #d49624 100%); padding: 50px 30px; text-align: center;">
+                        <div style="font-size: 80px; margin-bottom: 20px;">🎉</div>
+                        <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700;">Hoşgeldiniz!</h1>
+                        <p style="margin: 15px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 18px;">
+                          Highway Burger ailesine katıldığınız için teşekkürler!
+                        </p>
+                      </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                      <td style="padding: 50px 30px;">
+                        <h2 style="margin: 0 0 25px 0; color: #2d3748; font-size: 24px; font-weight: 600; text-align: center;">
+                          Merhaba ${name}! 👋
+                        </h2>
+                        
+                        <p style="margin: 0 0 30px 0; color: #4a5568; font-size: 16px; line-height: 1.6; text-align: center;">
+                          Artık Highway Burger'in bir parçasısınız! En lezzetli burgerleri, hızlı teslimatı ve özel kampanyaları keşfetmeye hazır mısınız?
+                        </p>
+                        
+                        <!-- Features -->
+                        <div style="margin-bottom: 40px;">
+                          <h3 style="margin: 0 0 20px 0; color: #2d3748; font-size: 20px; font-weight: 600; text-align: center;">
+                            🍔 Neler Sunuyoruz?
+                          </h3>
+                          
+                          <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #bb7c05;">
+                              <div style="font-size: 24px; margin-bottom: 8px;">⚡</div>
+                              <div style="font-weight: 700; color: #bb7c05; font-size: 16px; margin-bottom: 5px;">Hızlı Teslimat</div>
+                              <div style="color: #2d3748; font-size: 14px;">15-25 dakikada kapınızda!</div>
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #38a169;">
+                              <div style="font-size: 24px; margin-bottom: 8px;">🍔</div>
+                              <div style="font-weight: 700; color: #38a169; font-size: 16px; margin-bottom: 5px;">Taze Malzemeler</div>
+                              <div style="color: #2d3748; font-size: 14px;">Her gün taze hazırlanan burgerler</div>
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, #e6f3ff 0%, #b3d9ff 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #3182ce;">
+                              <div style="font-size: 24px; margin-bottom: 8px;">🎁</div>
+                              <div style="font-weight: 700; color: #3182ce; font-size: 16px; margin-bottom: 5px;">Özel Kampanyalar</div>
+                              <div style="color: #2d3748; font-size: 14px;">Üyelere özel indirimler ve hediyeler</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        <div style="text-align: center; margin-bottom: 40px;">
+                          <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}" 
+                             style="display: inline-block; background: linear-gradient(135deg, #bb7c05 0%, #d49624 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 12px rgba(187, 124, 5, 0.3);">
+                            🍔 Sipariş Vermeye Başla
+                          </a>
+                        </div>
+                        
+                        <!-- Tips -->
+                        <div style="background-color: #f7fafc; padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+                          <h3 style="margin: 0 0 15px 0; color: #2d3748; font-size: 18px; font-weight: 600; text-align: center;">
+                            💡 İpuçları
+                          </h3>
+                          <ul style="margin: 0; padding-left: 20px; color: #4a5568; font-size: 14px; line-height: 1.6;">
+                            <li style="margin-bottom: 8px;">Favori adreslerinizi kaydederek hızlı sipariş verebilirsiniz</li>
+                            <li style="margin-bottom: 8px;">Kampanya kodlarını takip ederek indirimlerden yararlanın</li>
+                            <li style="margin-bottom: 8px;">Siparişlerinizi profil sayfanızdan takip edebilirsiniz</li>
+                            <li>Sorularınız için müşteri hizmetlerimiz 7/24 hizmetinizde</li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                      <td style="background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                        <p style="margin: 0 0 10px 0; color: #718096; font-size: 14px;">
+                          Afiyet olsun! 🍔
+                        </p>
+                        <p style="margin: 0 0 15px 0; color: #a0aec0; font-size: 12px;">
+                          Bu mail ${email} adresine hoşgeldin mesajı olarak gönderilmiştir.
+                        </p>
+                        <p style="margin: 0; color: #a0aec0; font-size: 12px;">
+                          © ${new Date().getFullYear()} Highway Burger. Tüm hakları saklıdır.
+                        </p>
+                      </td>
+                    </tr>
+                    
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+        </html>
+      `,
+    })
+
+    if (error) {
+      console.error('❌ Welcome email error:', error)
+      return { success: false, error: error.message }
+    }
+
+    console.log('✅ Welcome email sent to:', email, '| Name:', name)
+    return { success: true, data }
+  } catch (error: any) {
+    console.error('❌ Welcome email error:', error)
     return { success: false, error: error.message }
   }
 }

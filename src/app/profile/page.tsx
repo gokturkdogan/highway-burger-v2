@@ -412,23 +412,6 @@ export default function ProfilePage() {
 
         </div>
 
-        {/* Account Stats - Desktop Only */}
-        <div className="hidden md:grid grid-cols-3 gap-6 mt-6">
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center border-t-4 border-[#bb7c05]">
-            <div className="text-3xl font-bold text-[#bb7c05] mb-1">0</div>
-            <div className="text-sm text-gray-600 font-medium">Toplam Sipariş</div>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center border-t-4 border-green-500">
-            <div className="text-3xl font-bold text-green-600 mb-1">0₺</div>
-            <div className="text-sm text-gray-600 font-medium">Toplam Harcama</div>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center border-t-4 border-blue-500">
-            <div className="text-3xl font-bold text-blue-600 mb-1">
-              Aktif
-            </div>
-            <div className="text-sm text-gray-600 font-medium">Üyelik Durumu</div>
-          </div>
-        </div>
       </div>
 
       <style jsx>{`

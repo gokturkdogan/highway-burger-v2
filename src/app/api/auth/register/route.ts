@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -55,6 +56,14 @@ export async function POST(request: Request) {
         passwordHash,
       },
     })
+
+    // Hoşgeldin maili gönder (async, hata olsa bile devam et)
+    try {
+      await sendWelcomeEmail(email, name)
+    } catch (emailError) {
+      console.error('Welcome email error:', emailError)
+      // Mail hatası olsa bile kullanıcı oluşturma başarılı
+    }
 
     return NextResponse.json(
       {
