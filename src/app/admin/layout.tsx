@@ -9,7 +9,6 @@ import {
   LayoutDashboard, 
   ShoppingBag, 
   Package, 
-  Users,
   LogOut,
   Menu,
   X,
@@ -59,7 +58,6 @@ export default function AdminLayout({
     { href: '/admin/orders', icon: ShoppingBag, label: 'Siparişler' },
     { href: '/admin/products', icon: Package, label: 'Ürünler' },
     { href: '/admin/categories', icon: FolderTree, label: 'Kategoriler' },
-    { href: '/admin/users', icon: Users, label: 'Kullanıcılar' },
   ]
 
   return (
