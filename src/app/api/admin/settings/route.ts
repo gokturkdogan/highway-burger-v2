@@ -45,30 +45,55 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { isOpen } = body
+    const { isOpen, deliveryStatus } = body
 
-    if (typeof isOpen !== 'boolean') {
+    // Validation
+    if (isOpen !== undefined && typeof isOpen !== 'boolean') {
       return NextResponse.json(
         { error: 'isOpen boolean olmalıdır' },
         { status: 400 }
       )
     }
 
+    if (deliveryStatus !== undefined && !['normal', 'busy', 'very_busy'].includes(deliveryStatus)) {
+      return NextResponse.json(
+        { error: 'deliveryStatus: normal, busy veya very_busy olmalıdır' },
+        { status: 400 }
+      )
+    }
+
+    // Update data objesi oluştur
+    const updateData: any = {}
+    if (isOpen !== undefined) updateData.isOpen = isOpen
+    if (deliveryStatus !== undefined) updateData.deliveryStatus = deliveryStatus
+
     const settings = await prisma.storeSettings.upsert({
       where: { id: 1 },
-      update: {
-        isOpen,
-      },
+      update: updateData,
       create: {
         id: 1,
-        isOpen,
+        isOpen: isOpen !== undefined ? isOpen : true,
+        deliveryStatus: deliveryStatus || 'normal',
       },
     })
+
+    // Success message
+    let message = ''
+    if (isOpen !== undefined) {
+      message = isOpen ? 'Mağaza açıldı ✅' : 'Mağaza kapatıldı ❌'
+    } else if (deliveryStatus !== undefined) {
+      const statusMap: Record<string, string> = {
+        normal: 'Normal teslimat (~20 dk) ⚡',
+        busy: 'Yoğun teslimat (~40 dk) ⏱️',
+        very_busy: 'Çok yoğun teslimat (~1 saat) 🚨',
+      }
+      message = statusMap[deliveryStatus]
+    }
 
     return NextResponse.json({
       success: true,
       settings,
-      message: isOpen ? 'Mağaza açıldı ✅' : 'Mağaza kapatıldı ❌',
+      message,
     })
   } catch (error) {
     console.error('Settings PUT error:', error)

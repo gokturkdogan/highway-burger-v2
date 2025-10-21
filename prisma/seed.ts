@@ -11,10 +11,12 @@ async function main() {
     create: {
       id: 1,
       isOpen: true, // Varsayılan olarak açık
+      deliveryStatus: 'normal', // Varsayılan teslimat durumu
     },
   })
 
   console.log('Mağaza ayarları oluşturuldu:', storeSettings.isOpen ? 'AÇIK ✅' : 'KAPALI ❌')
+  console.log('Teslimat durumu:', storeSettings.deliveryStatus)
   console.log('---')
 
   // Admin kullanıcı oluştur

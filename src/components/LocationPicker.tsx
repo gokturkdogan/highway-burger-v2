@@ -1,101 +1,121 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
+import { useEffect, useState, useRef } from 'react'
 import { MapPin, Locate } from 'lucide-react'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 // Fix for default marker icon
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
+if (typeof window !== 'undefined') {
+  delete (L.Icon.Default.prototype as any)._getIconUrl
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  })
+}
 
 interface LocationPickerProps {
   value: { lat: number; lng: number } | null
   onChange: (location: { lat: number; lng: number }) => void
 }
 
-function MapController({ center }: { center: { lat: number; lng: number } }) {
-  const map = useMapEvents({})
-  
-  useEffect(() => {
-    map.setView([center.lat, center.lng], map.getZoom())
-  }, [center, map])
-  
-  return null
-}
-
-function LocationMarker({ position, setPosition }: { 
-  position: { lat: number; lng: number } | null
-  setPosition: (pos: { lat: number; lng: number }) => void 
-}) {
-  const map = useMapEvents({
-    click(e) {
-      setPosition({ lat: e.latlng.lat, lng: e.latlng.lng })
-    },
-  })
-
-  // Konum değiştiğinde haritayı oraya götür
-  useEffect(() => {
-    if (position) {
-      map.flyTo([position.lat, position.lng], 16, {
-        duration: 1.5 // 1.5 saniye smooth animasyon
-      })
-    }
-  }, [position, map])
-
-  return position ? <Marker position={[position.lat, position.lng]} /> : null
-}
-
 export default function LocationPicker({ value, onChange }: LocationPickerProps) {
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(value)
   const [isLocating, setIsLocating] = useState(false)
-  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 40.9686, lng: 29.1167 })
   const [isMounted, setIsMounted] = useState(false)
-
-  // Default Istanbul coordinates
-  const defaultCenter = { lat: 40.9686, lng: 29.1167 } // Sultanbeyli merkez
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<L.Map | null>(null)
+  const markerRef = useRef<L.Marker | null>(null)
+  const [mapId] = useState(() => `map-${Math.random().toString(36).substr(2, 9)}`)
 
   // Client-side mounting kontrolü
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
+  // Harita oluşturma
   useEffect(() => {
-    if (position) {
-      onChange(position)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position])
+    if (!mapContainerRef.current || !isMounted) return
 
-  // İlk yüklemede kullanıcının konumunu almaya çalış
-  useEffect(() => {
-    // Eğer daha önce seçilmiş bir konum yoksa, kullanıcının konumunu al
-    if (!value && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const userLocation = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude
-          }
-          setMapCenter(userLocation)
-          // Otomatik olarak marker koyma, sadece haritayı ortalama
-        },
-        (error) => {
-          console.log('Konum izni verilmedi, default konum kullanılıyor:', error)
-          // Hata durumunda default center kullanılır (zaten state'te var)
-        },
-        {
-          enableHighAccuracy: false,
-          timeout: 5000,
-          maximumAge: 0
-        }
-      )
+    // Eğer map zaten varsa, önce temizle
+    if (mapRef.current) {
+      mapRef.current.remove()
+      mapRef.current = null
     }
-  }, [value])
+
+    try {
+      // Default center
+      const defaultCenter: [number, number] = [40.9686, 29.1167] // Sultanbeyli
+      const initialCenter = value ? [value.lat, value.lng] as [number, number] : defaultCenter
+
+      // Yeni map oluştur
+      const map = L.map(mapContainerRef.current, {
+        center: initialCenter,
+        zoom: 15,
+        scrollWheelZoom: true,
+      })
+
+      // Tile layer ekle
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map)
+
+      // Eğer value varsa marker ekle
+      if (value) {
+        const marker = L.marker([value.lat, value.lng]).addTo(map)
+        markerRef.current = marker
+      }
+
+      // Haritaya tıklandığında marker ekle/taşı
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        const newPos = {
+          lat: e.latlng.lat,
+          lng: e.latlng.lng
+        }
+        
+        // Eski marker'ı kaldır
+        if (markerRef.current) {
+          markerRef.current.remove()
+        }
+        
+        // Yeni marker ekle
+        const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map)
+        markerRef.current = marker
+        
+        // State'i güncelle
+        setPosition(newPos)
+        onChange(newPos)
+        
+        // Haritayı yeni konuma götür (smooth animation)
+        map.flyTo([e.latlng.lat, e.latlng.lng], 16, {
+          duration: 1
+        })
+      })
+
+      mapRef.current = map
+
+      // Harita boyutunu ayarla
+      setTimeout(() => {
+        map.invalidateSize()
+      }, 100)
+
+    } catch (error) {
+      console.error('Map initialization error:', error)
+    }
+
+    // Cleanup function
+    return () => {
+      if (markerRef.current) {
+        markerRef.current.remove()
+        markerRef.current = null
+      }
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+      }
+    }
+  }, [isMounted, value, onChange])
 
   const handleGetCurrentLocation = () => {
     setIsLocating(true)
@@ -106,7 +126,25 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
             lat: pos.coords.latitude,
             lng: pos.coords.longitude
           }
-          setPosition(newPos) // Bu haritayı otomatik oraya götürecek (flyTo ile)
+          
+          // Eski marker'ı kaldır
+          if (markerRef.current) {
+            markerRef.current.remove()
+          }
+          
+          // Yeni marker ekle
+          if (mapRef.current) {
+            const marker = L.marker([newPos.lat, newPos.lng]).addTo(mapRef.current)
+            markerRef.current = marker
+            
+            // Haritayı konuma götür
+            mapRef.current.flyTo([newPos.lat, newPos.lng], 16, {
+              duration: 1
+            })
+          }
+          
+          setPosition(newPos)
+          onChange(newPos)
           setIsLocating(false)
         },
         (error) => {
@@ -115,7 +153,7 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
           alert('Konum alınamadı. Haritadan manuel olarak seçebilirsiniz.')
         },
         {
-          enableHighAccuracy: true, // Daha hassas konum
+          enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 0
         }
@@ -157,19 +195,12 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
 
       {/* Map Container */}
       <div className="relative rounded-xl overflow-hidden border-2 border-gray-200 shadow-lg">
-        <MapContainer
-          center={[mapCenter.lat, mapCenter.lng]}
-          zoom={15}
+        <div 
+          id={mapId}
+          ref={mapContainerRef}
           style={{ height: '300px', width: '100%' }}
           className="z-0"
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <MapController center={mapCenter} />
-          <LocationMarker position={position} setPosition={setPosition} />
-        </MapContainer>
+        />
 
         {/* Current Location Button */}
         <button

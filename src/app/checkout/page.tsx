@@ -300,18 +300,70 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-64 md:pb-6">
           {/* Left Side - Address Selection & Payment Method */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Delivery Info Card */}
-            <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl shadow-lg p-5 border-2 border-blue-200 animate-fadeIn">
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-6 h-6 text-blue-600" />
+            {/* Delivery Info Card - Dynamic */}
+            {(() => {
+              const deliveryStatus = storeSettings?.deliveryStatus || 'normal'
+              const statusConfig = {
+                normal: {
+                  time: '~20 dakika',
+                  label: 'Normal Teslimat',
+                  color: 'green',
+                  bgGradient: 'from-green-50 to-white',
+                  borderColor: 'border-green-200',
+                  iconBg: 'bg-green-100',
+                  iconColor: 'text-green-600',
+                  textColor: 'text-green-900',
+                  descColor: 'text-green-700',
+                  emoji: '⚡'
+                },
+                busy: {
+                  time: '~40 dakika',
+                  label: 'Yoğun Teslimat',
+                  color: 'yellow',
+                  bgGradient: 'from-yellow-50 to-white',
+                  borderColor: 'border-yellow-300',
+                  iconBg: 'bg-yellow-100',
+                  iconColor: 'text-yellow-600',
+                  textColor: 'text-yellow-900',
+                  descColor: 'text-yellow-700',
+                  emoji: '⏱️'
+                },
+                very_busy: {
+                  time: '~1 saat',
+                  label: 'Çok Yoğun',
+                  color: 'red',
+                  bgGradient: 'from-red-50 to-white',
+                  borderColor: 'border-red-200',
+                  iconBg: 'bg-red-100',
+                  iconColor: 'text-red-600',
+                  textColor: 'text-red-900',
+                  descColor: 'text-red-700',
+                  emoji: '🚨'
+                }
+              }
+              const config = statusConfig[deliveryStatus as keyof typeof statusConfig]
+
+              return (
+                <div className={`bg-gradient-to-br ${config.bgGradient} rounded-2xl shadow-lg p-5 border-2 ${config.borderColor} animate-fadeIn`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                      <Clock className={`w-6 h-6 ${config.iconColor}`} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`font-bold ${config.textColor} mb-1 flex items-center gap-2`}>
+                        Tahmini Teslimat {config.emoji}
+                      </h3>
+                      <p className={`text-sm ${config.descColor} font-medium`}>
+                        {config.time} içinde kapınızda!
+                      </p>
+                      <div className={`inline-block mt-2 px-2.5 py-1 rounded-full text-xs font-bold ${config.iconBg} ${config.iconColor}`}>
+                        {config.label}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-blue-900 mb-1">Tahmini Teslimat</h3>
-                  <p className="text-sm text-blue-700">15-25 dakika içinde kapınızda!</p>
-                </div>
-              </div>
-            </div>
+              )
+            })()}
 
             {status === 'authenticated' ? (
               /* Logged In User - Address List */

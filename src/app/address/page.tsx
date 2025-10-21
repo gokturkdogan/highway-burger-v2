@@ -393,6 +393,7 @@ export default function AddressPage() {
 
               {/* Location Picker */}
               <LocationPicker
+                key={editingId ? `edit-${editingId}` : 'new'}
                 value={formData.latitude && formData.longitude ? { lat: formData.latitude, lng: formData.longitude } : null}
                 onChange={handleLocationChange}
               />

@@ -72,6 +72,21 @@ export default function AdminDashboard() {
     },
   })
 
+  // Delivery status mutation
+  const updateDeliveryStatusMutation = useMutation({
+    mutationFn: async (deliveryStatus: string) => {
+      const res = await axios.put('/api/admin/settings', { deliveryStatus })
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['store-settings'] })
+      toast.success('Teslimat durumu güncellendi', 3000)
+    },
+    onError: () => {
+      toast.error('Durum güncellenemedi', 3000)
+    },
+  })
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -148,6 +163,109 @@ export default function AdminDashboard() {
                 </span>
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Delivery Status Selector */}
+        <div className="mb-8 bg-white rounded-2xl shadow-lg p-6 border-2 border-transparent hover:border-[#bb7c05]/30 transition-all">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-xl flex items-center justify-center flex-shrink-0">
+              <Truck className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-[#2c3e50] mb-1">
+                Teslimat Yoğunluğu
+              </h3>
+              <p className="text-sm text-gray-600">
+                Teslimat süresini müşterilere bildir
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Normal */}
+            <button
+              onClick={() => updateDeliveryStatusMutation.mutate('normal')}
+              disabled={updateDeliveryStatusMutation.isPending}
+              className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                storeSettings?.deliveryStatus === 'normal'
+                  ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-lg scale-[1.02]'
+                  : 'border-gray-200 hover:border-green-300 hover:bg-green-50/50'
+              } ${updateDeliveryStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`w-3 h-3 rounded-full ${
+                  storeSettings?.deliveryStatus === 'normal' ? 'bg-green-500' : 'bg-gray-300'
+                }`}></div>
+                <span className={`font-bold ${
+                  storeSettings?.deliveryStatus === 'normal' ? 'text-green-700' : 'text-gray-600'
+                }`}>
+                  Normal
+                </span>
+              </div>
+              <div className={`text-2xl font-bold mb-1 ${
+                storeSettings?.deliveryStatus === 'normal' ? 'text-green-600' : 'text-gray-400'
+              }`}>
+                ~20 dk
+              </div>
+              <div className="text-xs text-gray-500">Standart teslimat</div>
+            </button>
+
+            {/* Busy */}
+            <button
+              onClick={() => updateDeliveryStatusMutation.mutate('busy')}
+              disabled={updateDeliveryStatusMutation.isPending}
+              className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                storeSettings?.deliveryStatus === 'busy'
+                  ? 'border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-lg scale-[1.02]'
+                  : 'border-gray-200 hover:border-yellow-300 hover:bg-yellow-50/50'
+              } ${updateDeliveryStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`w-3 h-3 rounded-full ${
+                  storeSettings?.deliveryStatus === 'busy' ? 'bg-yellow-500' : 'bg-gray-300'
+                }`}></div>
+                <span className={`font-bold ${
+                  storeSettings?.deliveryStatus === 'busy' ? 'text-yellow-700' : 'text-gray-600'
+                }`}>
+                  Yoğun
+                </span>
+              </div>
+              <div className={`text-2xl font-bold mb-1 ${
+                storeSettings?.deliveryStatus === 'busy' ? 'text-yellow-600' : 'text-gray-400'
+              }`}>
+                ~40 dk
+              </div>
+              <div className="text-xs text-gray-500">Orta yoğunluk</div>
+            </button>
+
+            {/* Very Busy */}
+            <button
+              onClick={() => updateDeliveryStatusMutation.mutate('very_busy')}
+              disabled={updateDeliveryStatusMutation.isPending}
+              className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                storeSettings?.deliveryStatus === 'very_busy'
+                  ? 'border-red-500 bg-gradient-to-br from-red-50 to-red-100 shadow-lg scale-[1.02]'
+                  : 'border-gray-200 hover:border-red-300 hover:bg-red-50/50'
+              } ${updateDeliveryStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`w-3 h-3 rounded-full ${
+                  storeSettings?.deliveryStatus === 'very_busy' ? 'bg-red-500' : 'bg-gray-300'
+                }`}></div>
+                <span className={`font-bold ${
+                  storeSettings?.deliveryStatus === 'very_busy' ? 'text-red-700' : 'text-gray-600'
+                }`}>
+                  Çok Yoğun
+                </span>
+              </div>
+              <div className={`text-2xl font-bold mb-1 ${
+                storeSettings?.deliveryStatus === 'very_busy' ? 'text-red-600' : 'text-gray-400'
+              }`}>
+                ~1 saat
+              </div>
+              <div className="text-xs text-gray-500">Yoğun trafik</div>
+            </button>
           </div>
         </div>
 
