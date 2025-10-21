@@ -22,18 +22,31 @@ export default function OrderDetailModal({ order, isOpen, onClose, onUpdateStatu
   const [selectedStatus, setSelectedStatus] = useState(order.status)
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(order.paymentStatus)
   const [isSaving, setIsSaving] = useState(false)
+  const [showMap, setShowMap] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
+      // Haritayı sadece modal tamamen açıldıktan sonra göster
+      const timer = setTimeout(() => {
+        setShowMap(true)
+      }, 300)
+      
+      return () => {
+        clearTimeout(timer)
+      }
     } else {
       document.body.style.overflow = 'unset'
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset'
+      setShowMap(false)
     }
   }, [isOpen])
+
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'unset'
+      setShowMap(false)
+    }
+  }, [])
 
   const handleClose = () => {
     setIsClosing(true)
@@ -324,11 +337,18 @@ export default function OrderDetailModal({ order, isOpen, onClose, onUpdateStatu
                 {/* Map */}
                 {order.deliveryLatitude && order.deliveryLongitude && (
                   <div className="mt-4">
-                    <MapView 
-                      latitude={order.deliveryLatitude} 
-                      longitude={order.deliveryLongitude}
-                      address={order.deliveryAddress}
-                    />
+                    {showMap ? (
+                      <MapView 
+                        key={order.id}
+                        latitude={order.deliveryLatitude} 
+                        longitude={order.deliveryLongitude}
+                        address={order.deliveryAddress}
+                      />
+                    ) : (
+                      <div className="h-64 bg-gray-200 rounded-xl flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#bb7c05] border-t-transparent"></div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
