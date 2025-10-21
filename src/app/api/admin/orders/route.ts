@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { sendOrderStatusEmail } from '@/lib/email'
 
 export async function GET(request: Request) {
   try {
@@ -87,6 +88,46 @@ export async function PATCH(request: Request) {
         },
       },
     })
+
+    // Eğer sipariş durumu değiştiyse mail gönder
+    if (status && status !== 'received') {
+      try {
+        // Mail gönderilecek email adresini belirle
+        const email = order.user?.email || order.deliveryEmail
+        const name = order.user?.name || order.deliveryName || 'Müşteri'
+
+        if (email) {
+          // Sipariş verilerini hazırla
+          const orderData = {
+            orderId: order.id,
+            name: name,
+            status: status,
+            total: order.total,
+            items: order.items.map(item => ({
+              name: item.product.name,
+              quantity: item.quantity,
+              price: item.price,
+              extraText: item.product.extraText,
+              selectedOption: item.selectedOption,
+            })),
+            shippingAddress: {
+              fullName: order.deliveryName || name,
+              phone: order.deliveryPhone || '',
+              city: order.deliveryCity || '',
+              district: order.deliveryDistrict || '',
+              fullAddress: order.deliveryAddress || '',
+            },
+            paymentMethod: order.paymentMethod || 'Bilinmiyor',
+          }
+
+          // Mail gönder
+          await sendOrderStatusEmail(email, orderData)
+        }
+      } catch (emailError) {
+        console.error('Order status email error:', emailError)
+        // Mail hatası olsa bile sipariş güncelleme başarılı
+      }
+    }
 
     return NextResponse.json(order)
   } catch (error) {
