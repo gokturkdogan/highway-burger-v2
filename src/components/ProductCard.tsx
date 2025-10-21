@@ -13,7 +13,9 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { useCart } from '@/hooks/useCart'
 import { formatPrice } from '@/lib/utils'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Lock } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 
 interface Product {
   id: number
@@ -35,8 +37,25 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const addItem = useCart((state) => state.addItem)
 
+  // Store settings'i çek (cache'lendi, sadece 1 kere çalışır)
+  const { data: storeSettings } = useQuery({
+    queryKey: ['store-settings'],
+    queryFn: async () => {
+      const res = await axios.get('/api/admin/settings')
+      return res.data
+    },
+    staleTime: 5 * 60 * 1000, // 5 dakika boyunca cache'ten al
+    gcTime: 10 * 60 * 1000, // 10 dakika memory'de tut
+    refetchOnWindowFocus: false, // Pencere focus değiştiğinde yeniden çekme
+    refetchOnMount: false, // Component mount olduğunda cache varsa yeniden çekme
+  })
+
+  const isStoreClosed = storeSettings?.isOpen === false
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
+    if (isStoreClosed) return
+    
     addItem({
       id: product.id,
       name: product.name,
@@ -76,9 +95,19 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="w-full"
             onClick={handleAddToCart}
             size="lg"
+            disabled={isStoreClosed}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Sepete Ekle
+            {isStoreClosed ? (
+              <>
+                <Lock className="mr-2 h-4 w-4" />
+                Mağaza Kapalı
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Sepete Ekle
+              </>
+            )}
           </Button>
         </CardFooter>
       </Card>

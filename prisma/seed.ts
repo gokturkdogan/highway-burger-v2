@@ -4,6 +4,19 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
+  // Store Settings oluştur (tek bir kayıt, id=1)
+  const storeSettings = await prisma.storeSettings.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      isOpen: true, // Varsayılan olarak açık
+    },
+  })
+
+  console.log('Mağaza ayarları oluşturuldu:', storeSettings.isOpen ? 'AÇIK ✅' : 'KAPALI ❌')
+  console.log('---')
+
   // Admin kullanıcı oluştur
   const adminPassword = await bcrypt.hash('admin123', 10)
   const admin = await prisma.user.upsert({
@@ -22,6 +35,16 @@ async function main() {
   console.log('Password: admin123')
   console.log('---')
 
+  // Eğer zaten ürün varsa, örnek verileri ekleme (kullanıcı kendi verilerini kullanıyor)
+  const productCount = await prisma.product.count()
+  
+  if (productCount > 0) {
+    console.log(`⚠️  Database'de ${productCount} ürün var. Örnek veriler eklenmedi.`)
+    console.log('   (Eğer örnek verileri tekrar eklemek istersen, önce tüm ürünleri sil)')
+    return
+  }
+
+  console.log('📦 Database boş, örnek veriler ekleniyor...\n')
 
   // Kategorileri oluştur
   const categories = await Promise.all([

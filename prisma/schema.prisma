@@ -100,3 +100,9 @@ model Address {
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
 }
+
+model StoreSettings {
+  id        Int      @id @default(1) // Tek bir kayıt olacak, id=1 sabit
+  isOpen    Boolean  @default(true)  // Dükkan açık mı?
+  updatedAt DateTime @updatedAt      // Son güncelleme zamanı
+}

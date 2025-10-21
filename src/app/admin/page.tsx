@@ -2,8 +2,8 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import Link from 'next/link'
 import { 
@@ -14,12 +14,17 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Truck
+  Truck,
+  Store,
+  Power
 } from 'lucide-react'
+import { useToast } from '@/contexts/ToastContext'
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -38,6 +43,33 @@ export default function AdminDashboard() {
       return res.data
     },
     enabled: status === 'authenticated' && session?.user?.role === 'admin',
+  })
+
+  // Fetch store settings
+  const { data: storeSettings } = useQuery({
+    queryKey: ['store-settings'],
+    queryFn: async () => {
+      const res = await axios.get('/api/admin/settings')
+      return res.data
+    },
+    enabled: status === 'authenticated' && session?.user?.role === 'admin',
+    staleTime: 2 * 60 * 1000, // Admin için 2 dakika (daha sık güncelleme)
+    gcTime: 5 * 60 * 1000,
+  })
+
+  // Toggle store status mutation
+  const toggleStoreMutation = useMutation({
+    mutationFn: async (isOpen: boolean) => {
+      const res = await axios.put('/api/admin/settings', { isOpen })
+      return res.data
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['store-settings'] })
+      toast.success(data.message, 3000)
+    },
+    onError: () => {
+      toast.error('Durum güncellenemedi', 3000)
+    },
   })
 
   if (status === 'loading' || isLoading) {
@@ -64,6 +96,61 @@ export default function AdminDashboard() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6">
+        {/* Store Status Toggle */}
+        <div className="mb-8 bg-white rounded-2xl shadow-lg p-6 border-2 border-transparent hover:border-[#bb7c05]/30 transition-all">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                storeSettings?.isOpen 
+                  ? 'bg-gradient-to-br from-green-400 to-green-600' 
+                  : 'bg-gradient-to-br from-red-400 to-red-600'
+              }`}>
+                <Store className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[#2c3e50] mb-1">
+                  Mağaza Durumu
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {storeSettings?.isOpen 
+                    ? '🟢 Mağaza açık - Siparişler alınıyor' 
+                    : '🔴 Mağaza kapalı - Siparişler alınamıyor'}
+                </p>
+              </div>
+            </div>
+            
+            {/* Toggle Switch */}
+            <div className="flex items-center gap-4">
+              <span className={`text-sm font-bold ${
+                storeSettings?.isOpen ? 'text-green-600' : 'text-gray-400'
+              }`}>
+                {storeSettings?.isOpen ? 'AÇIK' : 'KAPALI'}
+              </span>
+              <button
+                onClick={() => toggleStoreMutation.mutate(!storeSettings?.isOpen)}
+                disabled={toggleStoreMutation.isPending}
+                className={`relative inline-flex h-10 w-20 items-center rounded-full transition-all duration-300 ${
+                  storeSettings?.isOpen 
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg shadow-green-500/50' 
+                    : 'bg-gray-300'
+                } ${toggleStoreMutation.isPending ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+              >
+                <span
+                  className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-lg transition-transform duration-300 flex items-center justify-center ${
+                    storeSettings?.isOpen ? 'translate-x-11' : 'translate-x-1'
+                  }`}
+                >
+                  {toggleStoreMutation.isPending ? (
+                    <div className="w-4 h-4 border-2 border-[#bb7c05] border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Power className={`w-4 h-4 ${storeSettings?.isOpen ? 'text-green-600' : 'text-gray-400'}`} />
+                  )}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Orders */}

@@ -11,7 +11,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000,
+            staleTime: 2 * 60 * 1000, // 2 dakika (eski: 1 dakika)
+            gcTime: 5 * 60 * 1000, // 5 dakika garbage collection
+            refetchOnWindowFocus: false, // Pencere focus'ta otomatik refetch yapma
+            refetchOnReconnect: false, // İnternet bağlantısı gelince otomatik refetch yapma
+            retry: 1, // Hata durumunda sadece 1 kere tekrar dene (eski: 3)
           },
         },
       })

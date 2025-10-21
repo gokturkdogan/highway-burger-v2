@@ -43,9 +43,30 @@ export default function CheckoutPage() {
   const getTotalWithDiscount = useCart((state) => state.getTotalWithDiscount)
   const discount = useCart((state) => state.discount)
 
+  // Store settings'i çek
+  const { data: storeSettings } = useQuery({
+    queryKey: ['store-settings'],
+    queryFn: async () => {
+      const res = await axios.get('/api/admin/settings')
+      return res.data
+    },
+    staleTime: 5 * 60 * 1000, // 5 dakika cache
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  })
+
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Store kapalıysa ana sayfaya yönlendir
+  useEffect(() => {
+    if (mounted && storeSettings?.isOpen === false) {
+      toast.error('Mağaza şu an kapalı! Sipariş veremezsiniz.', 3000)
+      router.push('/')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, storeSettings?.isOpen])
 
   // Sepet boşsa anasayfaya yönlendir
   useEffect(() => {
@@ -53,7 +74,8 @@ export default function CheckoutPage() {
       toast.warning('Sepetiniz boş!', 2000)
       router.push('/')
     }
-  }, [mounted, items, router, toast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, items.length])
 
   // Login kullanıcı için adresleri çek
   const { data: addresses, isLoading } = useQuery<Address[]>({

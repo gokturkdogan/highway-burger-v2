@@ -28,6 +28,21 @@ export default function HomePage() {
       const res = await axios.get('/api/categories')
       return res.data
     },
+    staleTime: 10 * 60 * 1000, // 10 dakika cache (kategoriler nadiren değişir)
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  })
+
+  // Store settings'i çek
+  const { data: storeSettings } = useQuery({
+    queryKey: ['store-settings'],
+    queryFn: async () => {
+      const res = await axios.get('/api/admin/settings')
+      return res.data
+    },
+    staleTime: 5 * 60 * 1000, // 5 dakika cache
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
   })
 
   // Fallback kategoriler (database'de veri yoksa)
@@ -68,6 +83,21 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-100 pb-20 md:pb-6">
+      {/* Store Closed Banner */}
+      {storeSettings?.isOpen === false && (
+        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 text-center shadow-lg sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+              <span className="text-2xl">🔒</span>
+            </div>
+            <div>
+              <p className="font-bold text-lg">Mağaza Şu An Kapalı</p>
+              <p className="text-sm text-white/90">Sipariş veremezsiniz. Lütfen daha sonra tekrar deneyin.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section - Desktop Only */}
       <div className="hidden md:block relative overflow-hidden bg-gradient-to-br from-[#bb7c05] via-[#d49624] to-[#bb7c05] py-8 mb-6">
         {/* Animated Background Shapes */}
