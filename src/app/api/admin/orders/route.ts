@@ -103,6 +103,7 @@ export async function PATCH(request: Request) {
             name: name,
             status: status,
             total: order.total,
+            orderNote: order.orderNote,
             items: order.items.map(item => ({
               name: item.product.name,
               quantity: item.quantity,

@@ -17,8 +17,8 @@ export async function sendOrderConfirmationEmail(
       name: string
       quantity: number
       price: number
-      extraText?: string
-      selectedOption?: string
+      extraText?: string | null
+      selectedOption?: string | null
     }>
     shippingAddress: {
       fullName: string
@@ -383,12 +383,13 @@ export async function sendOrderStatusEmail(
     name: string
     status: string
     total: number
+    orderNote?: string | null
     items: Array<{ 
       name: string
       quantity: number
       price: number
-      extraText?: string
-      selectedOption?: string
+      extraText?: string | null
+      selectedOption?: string | null
     }>
     shippingAddress: {
       fullName: string
