@@ -28,6 +28,7 @@ interface Order {
   status: string
   paymentStatus: string
   paymentMethod: string | null
+  orderNote: string | null
   deliveryName: string | null
   deliveryEmail: string | null
   deliveryPhone: string | null
@@ -364,6 +365,16 @@ export default function AdminOrdersPage() {
                   <div className="text-sm text-gray-600">{order.deliveryPhone}</div>
                 </div>
 
+                {/* Order Note */}
+                {order.orderNote && (
+                  <div className="mb-3">
+                    <div className="text-xs text-gray-600 mb-1">Sipariş Notu</div>
+                    <div className="text-sm text-gray-900 bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                      <span className="font-medium">📝</span> {order.orderNote}
+                    </div>
+                  </div>
+                )}
+
                 {/* Date */}
                 <div className="mb-3">
                   <div className="text-xs text-gray-600 mb-1">Tarih</div>
@@ -441,6 +452,11 @@ export default function AdminOrdersPage() {
                           <div className="text-gray-600">
                             {order.deliveryPhone}
                           </div>
+                          {order.orderNote && (
+                            <div className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded px-2 py-1 mt-1">
+                              📝 {order.orderNote}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">

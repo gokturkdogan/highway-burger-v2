@@ -28,19 +28,21 @@ model Category {
 }
 
 model Product {
-  id           Int         @id @default(autoincrement())
-  name         String
-  slug         String      @unique
-  description  String
-  price        Float
-  secondPrice  Float?      // Ekstra seçenek fiyatı (opsiyonel)
-  extraText    String?     // Ekstra açıklama (110/180gr, +patates vb.)
-  imageUrl     String?
-  categoryId   Int
-  isActive     Boolean     @default(true) // Ürün aktif mi? (müşterilere gösterilsin mi?)
-  createdAt    DateTime    @default(now())
-  orderItems   OrderItem[]
-  category     Category    @relation(fields: [categoryId], references: [id])
+  id              Int         @id @default(autoincrement())
+  name            String
+  slug            String      @unique
+  description     String
+  price           Float
+  secondPrice     Float?      // Ekstra seçenek fiyatı (opsiyonel)
+  extraText       String?     // Ekstra açıklama (110/180gr, +patates vb.)
+  priceText       String?     // Fiyat altında gösterilecek açıklama metni
+  secondPriceText String?     // İkinci fiyat altında gösterilecek açıklama metni
+  imageUrl        String?
+  categoryId      Int
+  isActive        Boolean     @default(true) // Ürün aktif mi? (müşterilere gösterilsin mi?)
+  createdAt       DateTime    @default(now())
+  orderItems      OrderItem[]
+  category        Category    @relation(fields: [categoryId], references: [id])
 }
 
 model Coupon {
@@ -59,6 +61,7 @@ model Order {
   status          String      @default("received")      // received, preparing, on_the_way, delivered, cancelled
   paymentStatus   String      @default("pending")      // pending, paid, failed
   paymentMethod   String?                              // Kapıda Nakit, Kapıda Kredi Kartı, Online Kredi Kartı
+  orderNote       String?                              // Sipariş notu (malzeme çıkar, özel istek vb.)
   // Teslimat Adresi Bilgileri
   deliveryName      String?
   deliveryEmail     String?   // Guest email

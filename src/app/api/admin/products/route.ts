@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, slug, description, price, secondPrice, extraText, imageUrl, categoryId, isActive } = body
+    const { name, slug, description, price, secondPrice, extraText, priceText, secondPriceText, imageUrl, categoryId, isActive } = body
 
     // Validation
     if (!name || !slug || !description || !price || !categoryId) {
@@ -57,6 +57,8 @@ export async function POST(request: Request) {
         price: parseFloat(price),
         secondPrice: secondPrice ? parseFloat(secondPrice) : null,
         extraText,
+        priceText,
+        secondPriceText,
         imageUrl,
         categoryId: parseInt(categoryId),
         isActive: isActive !== undefined ? isActive : true,
@@ -93,7 +95,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json()
-    const { id, name, slug, description, price, secondPrice, extraText, imageUrl, categoryId, isActive } = body
+    const { id, name, slug, description, price, secondPrice, extraText, priceText, secondPriceText, imageUrl, categoryId, isActive } = body
 
     if (!id) {
       return NextResponse.json(
@@ -111,6 +113,8 @@ export async function PUT(request: Request) {
         price: parseFloat(price),
         secondPrice: secondPrice ? parseFloat(secondPrice) : null,
         extraText,
+        priceText,
+        secondPriceText,
         imageUrl,
         categoryId: parseInt(categoryId),
         isActive: isActive !== undefined ? isActive : true,

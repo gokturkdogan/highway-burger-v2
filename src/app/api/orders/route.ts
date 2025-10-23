@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     const body = await request.json()
-    const { total, paymentMethod, address, items } = body
+    const { total, paymentMethod, address, items, orderNote } = body
 
     const order = await prisma.order.create({
       data: {
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
         status: 'received',
         paymentStatus: 'pending',
         paymentMethod: paymentMethod || null,
+        orderNote: orderNote || null, // Sipariş notu
         // Teslimat bilgileri
         deliveryName: address?.fullName || null,
         deliveryEmail: address?.email || null,
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
           orderId: order.id,
           name: address?.fullName || session?.user?.name || 'Müşteri',
           total: order.total,
+          orderNote: order.orderNote,
           items: items || [],
           shippingAddress: {
             fullName: address?.fullName || '',

@@ -37,6 +37,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<string>('')
   const [showPaymentError, setShowPaymentError] = useState(false)
   const [currentStep, setCurrentStep] = useState(2) // 1: Sepet, 2: Teslimat, 3: Ödeme
+  const [orderNote, setOrderNote] = useState<string>('') // Sipariş notu
   const paymentMethodRef = useRef<HTMLDivElement>(null)
 
   const items = useCart((state) => state.items)
@@ -178,6 +179,7 @@ export default function CheckoutPage() {
         paymentMethod: paymentMethod === 'cash' ? 'Kapıda Nakit' : 'Kapıda Kredi Kartı',
         address: deliveryAddress,
         items: items,
+        orderNote: orderNote.trim() || null, // Sipariş notu
       })
 
       toast.success('Sipariş başarıyla oluşturuldu!', 3000)
@@ -534,6 +536,31 @@ export default function CheckoutPage() {
                 </button>
               </>
             )}
+
+            {/* Order Note */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+              <h2 className="text-lg font-bold mb-4 text-[#2c3e50]">
+                Sipariş Notu
+              </h2>
+              <div className="relative">
+                <textarea
+                  value={orderNote}
+                  onChange={(e) => setOrderNote(e.target.value)}
+                  placeholder="Özel isteklerinizi buraya yazabilirsiniz... (Örn: Soğan çıkarın, az acılı olsun, ekstra sos vb.)"
+                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-[#bb7c05] focus:ring-2 focus:ring-[#bb7c05]/20 transition-all duration-300 resize-none"
+                  rows={3}
+                  maxLength={200}
+                />
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-xs text-gray-500">
+                    Malzeme çıkarma, özel istekler vb.
+                  </p>
+                  <span className="text-xs text-gray-400">
+                    {orderNote.length}/200
+                  </span>
+                </div>
+              </div>
+            </div>
 
             {/* Payment Method Selection */}
             <div 

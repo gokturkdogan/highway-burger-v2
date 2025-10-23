@@ -25,6 +25,8 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
     price: '',
     secondPrice: '',
     extraText: '',
+    priceText: '',
+    secondPriceText: '',
     imageUrl: '',
     categoryId: '',
     isActive: true,
@@ -51,6 +53,8 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
         price: product.price.toString(),
         secondPrice: product.secondPrice?.toString() || '',
         extraText: product.extraText || '',
+        priceText: product.priceText || '',
+        secondPriceText: product.secondPriceText || '',
         imageUrl: product.imageUrl || '',
         categoryId: product.categoryId.toString(),
         isActive: product.isActive !== undefined ? product.isActive : true,
@@ -64,6 +68,8 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
         price: '',
         secondPrice: '',
         extraText: '',
+        priceText: '',
+        secondPriceText: '',
         imageUrl: '',
         categoryId: '',
         isActive: true,
@@ -398,6 +404,36 @@ export default function ProductFormModal({ isOpen, onClose, product }: ProductFo
                 placeholder="Örn: 110/180gr"
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#bb7c05] focus:outline-none"
               />
+            </div>
+
+            {/* Price Texts */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Fiyat Açıklaması
+                </label>
+                <input
+                  type="text"
+                  name="priceText"
+                  value={formData.priceText}
+                  onChange={handleChange}
+                  placeholder="Örn: Standart boy"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#bb7c05] focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  İkinci Fiyat Açıklaması
+                </label>
+                <input
+                  type="text"
+                  name="secondPriceText"
+                  value={formData.secondPriceText}
+                  onChange={handleChange}
+                  placeholder="Örn: Büyük boy"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#bb7c05] focus:outline-none"
+                />
+              </div>
             </div>
 
             {/* Is Active Toggle */}

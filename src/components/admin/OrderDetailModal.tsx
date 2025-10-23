@@ -305,6 +305,18 @@ export default function OrderDetailModal({ order, isOpen, onClose, onUpdateStatu
                   </div>
                 )}
 
+                {order.orderNote && (
+                  <div className="flex items-start gap-3">
+                    <Package className="w-5 h-5 text-yellow-500 mt-0.5" />
+                    <div>
+                      <div className="text-sm text-gray-600">Sipariş Notu</div>
+                      <div className="font-medium text-gray-900 bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-1">
+                        📝 {order.orderNote}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {order.paymentMethod && (
                   <div className="flex items-start gap-3">
                     <CreditCard className="w-5 h-5 text-gray-400 mt-0.5" />

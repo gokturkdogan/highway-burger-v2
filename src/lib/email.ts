@@ -12,6 +12,7 @@ export async function sendOrderConfirmationEmail(
     orderId: number
     name: string
     total: number
+    orderNote?: string | null
     items: Array<{ 
       name: string
       quantity: number
@@ -147,6 +148,18 @@ export async function sendOrderConfirmationEmail(
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                           ${itemsHtml}
                         </table>
+                        
+                        ${orderData.orderNote ? `
+                        <!-- Order Note -->
+                        <div style="margin-bottom: 25px; background-color: #fef5e7; border: 2px solid #f6ad55; border-radius: 8px; padding: 15px;">
+                          <h4 style="margin: 0 0 10px 0; color: #2d3748; font-size: 16px; font-weight: 600;">
+                            📝 Sipariş Notunuz
+                          </h4>
+                          <p style="margin: 0; color: #4a5568; font-size: 14px; line-height: 1.5;">
+                            ${orderData.orderNote}
+                          </p>
+                        </div>
+                        ` : ''}
                         
                         <!-- Price Summary -->
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px; background-color: #fef5e7; border-radius: 8px; padding: 20px; border: 2px solid #bb7c05;">
@@ -531,6 +544,18 @@ export async function sendOrderStatusEmail(
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                           ${itemsHtml}
                         </table>
+                        
+                        ${orderData.orderNote ? `
+                        <!-- Order Note -->
+                        <div style="margin-bottom: 25px; background-color: #fef5e7; border: 2px solid #f6ad55; border-radius: 8px; padding: 15px;">
+                          <h4 style="margin: 0 0 10px 0; color: #2d3748; font-size: 16px; font-weight: 600;">
+                            📝 Sipariş Notunuz
+                          </h4>
+                          <p style="margin: 0; color: #4a5568; font-size: 14px; line-height: 1.5;">
+                            ${orderData.orderNote}
+                          </p>
+                        </div>
+                        ` : ''}
                         
                         <!-- Price Summary -->
                         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px; background-color: #fef5e7; border-radius: 8px; padding: 20px; border: 2px solid #bb7c05;">

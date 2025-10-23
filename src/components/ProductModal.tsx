@@ -16,6 +16,8 @@ interface ProductModalProps {
     price: number
     secondPrice?: number | null
     extraText?: string | null
+    priceText?: string | null
+    secondPriceText?: string | null
     imageUrl?: string | null
   }
 }
@@ -184,9 +186,9 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
                   >
                     <div className="text-center">
                       <div className="text-base font-bold text-[#bb7c05]">{product.price}₺</div>
-                      {product.extraText && (
+                      {product.priceText && (
                         <div className="text-xs text-gray-500 mt-0.5">
-                          {product.extraText.split('/')[0]}
+                          {product.priceText}
                         </div>
                       )}
                     </div>
@@ -210,9 +212,9 @@ export default function ProductModal({ isOpen, onClose, product }: ProductModalP
                   >
                     <div className="text-center">
                       <div className="text-base font-bold text-[#bb7c05]">{product.secondPrice}₺</div>
-                      {product.extraText && (
+                      {product.secondPriceText && (
                         <div className="text-xs text-gray-500 mt-0.5">
-                          {product.extraText.split('/')[1]}
+                          {product.secondPriceText}
                         </div>
                       )}
                     </div>
