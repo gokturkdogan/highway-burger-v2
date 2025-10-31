@@ -31,6 +31,22 @@ const varelaRound = Varela_Round({
 export const metadata: Metadata = {
   title: 'Highway Burger - En Lezzetli Burgerler',
   description: 'En lezzetli burgerleri kapınıza getiriyoruz',
+  manifest: '/manifest.webmanifest',
+  themeColor: '#111827',
+  icons: {
+    icon: [
+      { url: '/images/logo/splash.png', sizes: '192x192', type: 'image/png' },
+      { url: '/images/logo/splash.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/images/logo/splash.png' }
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Highway Burger',
+  },
 }
 
 export default function RootLayout({
