@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 
 // Eski ve yeni database connection'ları
 const oldDB = new PrismaClient({
@@ -24,10 +24,14 @@ async function migrateData() {
     console.log('⚙️  Mağaza ayarları taşınıyor...')
     const settings = await oldDB.storeSettings.findUnique({ where: { id: 1 } })
     if (settings) {
+      const settingsData = {
+        ...settings,
+        acceptedFoodCards: settings.acceptedFoodCards ? (settings.acceptedFoodCards as Prisma.InputJsonValue) : undefined
+      }
       await newDB.storeSettings.upsert({
         where: { id: 1 },
-        update: settings,
-        create: settings
+        update: settingsData,
+        create: settingsData
       })
       console.log(`   ✅ Mağaza ayarları taşındı\n`)
     }

@@ -105,8 +105,9 @@ model Address {
 }
 
 model StoreSettings {
-  id             Int      @id @default(1) // Tek bir kayıt olacak, id=1 sabit
-  isOpen         Boolean  @default(true)  // Dükkan açık mı?
-  deliveryStatus String   @default("normal") // normal, busy, very_busy (Teslimat yoğunluğu)
-  updatedAt      DateTime @updatedAt      // Son güncelleme zamanı
+  id                Int       @id @default(1) // Tek bir kayıt olacak, id=1 sabit
+  isOpen            Boolean   @default(true)  // Dükkan açık mı?
+  deliveryStatus    String    @default("normal") // normal, busy, very_busy (Teslimat yoğunluğu)
+  acceptedFoodCards Json      @default("[{\"name\":\"Yemeksepeti Kartı\",\"imageUrl\":null,\"isActive\":true},{\"name\":\"Getir Yemek Kartı\",\"imageUrl\":null,\"isActive\":true},{\"name\":\"Trendyol Yemek Kartı\",\"imageUrl\":null,\"isActive\":true},{\"name\":\"Migros Yemek Kartı\",\"imageUrl\":null,\"isActive\":true}]") // Kabul edilen yemek kartları [{name: string, imageUrl: string | null, isActive: boolean}]
+  updatedAt         DateTime  @updatedAt      // Son güncelleme zamanı
 }

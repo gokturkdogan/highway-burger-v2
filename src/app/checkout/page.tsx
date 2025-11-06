@@ -9,6 +9,7 @@ import { MapPin, Plus, Edit2, CheckCircle, Truck, Clock, User, Phone, ArrowRight
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/contexts/ToastContext'
 import AddressModal from '@/components/AddressModal'
+import FoodCardsAccordion from '@/components/FoodCardsAccordion'
 
 interface Address {
   id: number
@@ -174,9 +175,15 @@ export default function CheckoutPage() {
       toast.info('Sipariş oluşturuluyor...', 2000)
 
       // Sipariş oluştur
+      const paymentMethodText = 
+        paymentMethod === 'cash' ? 'Kapıda Nakit' :
+        paymentMethod === 'card-on-delivery' ? 'Kapıda Kredi Kartı' :
+        paymentMethod === 'food-card' ? 'Kapıda Yemek Kartı' :
+        'Kapıda Nakit'
+
       const order = await axios.post('/api/orders', {
         total: getTotalWithDiscount(),
-        paymentMethod: paymentMethod === 'cash' ? 'Kapıda Nakit' : 'Kapıda Kredi Kartı',
+        paymentMethod: paymentMethodText,
         address: deliveryAddress,
         items: items,
         orderNote: orderNote.trim() || null, // Sipariş notu
@@ -659,6 +666,71 @@ export default function CheckoutPage() {
                 </div>
               </div>
               </div>
+
+              {/* Kapıda Yemek Kartı - Full Width */}
+              <button
+                onClick={() => {
+                  setPaymentMethod('food-card')
+                  setShowPaymentError(false)
+                }}
+                className={`w-full mt-4 p-5 rounded-2xl shadow-lg transition-all duration-300 border-2 ${
+                  paymentMethod === 'food-card'
+                    ? 'bg-gradient-to-br from-[#bb7c05]/10 to-[#d49624]/5 border-[#bb7c05] scale-[1.01]'
+                    : 'bg-white border-gray-200 hover:border-[#bb7c05]/30 hover:shadow-xl'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                    paymentMethod === 'food-card'
+                      ? 'bg-gradient-to-br from-[#bb7c05] to-[#d49624]'
+                      : 'bg-gray-100'
+                  }`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${paymentMethod === 'food-card' ? 'text-white' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <h3 className={`font-bold mb-1 ${paymentMethod === 'food-card' ? 'text-[#bb7c05]' : 'text-[#2c3e50]'}`}>
+                      Kapıda Yemek Kartı
+                    </h3>
+                    <p className="text-xs text-gray-600 mb-3">Teslimat sırasında yemek kartı ile ödeyin</p>
+                    
+                    {/* Food Cards Accordion */}
+                    {(() => {
+                      try {
+                        let cards: any[] = []
+                        
+                        if (storeSettings?.acceptedFoodCards) {
+                          // Prisma JSON tipi zaten parse edilmiş olarak gelir
+                          if (Array.isArray(storeSettings.acceptedFoodCards)) {
+                            cards = storeSettings.acceptedFoodCards
+                          } else if (typeof storeSettings.acceptedFoodCards === 'string') {
+                            cards = JSON.parse(storeSettings.acceptedFoodCards)
+                          } else {
+                            cards = []
+                          }
+                        }
+                        
+                        const formattedCards = cards.map((card: any) => ({
+                          name: typeof card === 'string' ? card : (card.name || ''),
+                          imageUrl: typeof card === 'string' ? null : (card.imageUrl || null),
+                          isActive: typeof card === 'string' ? true : (card.isActive !== undefined ? card.isActive : true)
+                        }))
+
+                        return <FoodCardsAccordion cards={formattedCards} />
+                      } catch (e) {
+                        console.error('Error parsing food cards in checkout:', e)
+                        return null
+                      }
+                    })()}
+                  </div>
+                  {paymentMethod === 'food-card' && (
+                    <div className="w-6 h-6 bg-[#bb7c05] rounded-full flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-5 h-5 text-white fill-white" />
+                    </div>
+                  )}
+                </div>
+              </button>
             </div>
           </div>
 

@@ -16,7 +16,9 @@ import {
   XCircle,
   Truck,
   Store,
-  Power
+  Power,
+  CreditCard,
+  ArrowRight
 } from 'lucide-react'
 import { useToast } from '@/contexts/ToastContext'
 
@@ -86,6 +88,7 @@ export default function AdminDashboard() {
       toast.error('Durum güncellenemedi', 3000)
     },
   })
+
 
   if (status === 'loading' || isLoading) {
     return (
@@ -268,6 +271,24 @@ export default function AdminDashboard() {
             </button>
           </div>
         </div>
+
+        {/* Food Cards Management Link */}
+        <Link href="/admin/food-cards" className="block mb-8">
+          <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-transparent hover:border-[#bb7c05]/30 transition-all hover:scale-[1.02] group">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#bb7c05] to-[#d49624] rounded-xl flex items-center justify-center">
+                <CreditCard className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-[#2c3e50] group-hover:text-[#bb7c05] transition-colors">
+                  Yemek Kartları Yönetimi
+                </h3>
+                <p className="text-gray-600 text-sm">Checkout sayfasında görünecek yemek kartlarını yönetin</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#bb7c05] transition-colors" />
+            </div>
+          </div>
+        </Link>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

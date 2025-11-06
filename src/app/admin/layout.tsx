@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  FolderTree
+  FolderTree,
+  CreditCard
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
@@ -58,6 +59,7 @@ export default function AdminLayout({
     { href: '/admin/orders', icon: ShoppingBag, label: 'Siparişler' },
     { href: '/admin/products', icon: Package, label: 'Ürünler' },
     { href: '/admin/categories', icon: FolderTree, label: 'Kategoriler' },
+    { href: '/admin/food-cards', icon: CreditCard, label: 'Yemek Kartları' },
   ]
 
   return (

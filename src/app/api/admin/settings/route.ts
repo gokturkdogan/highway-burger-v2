@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 // GET - Store settings'i al
 export async function GET(request: NextRequest) {
@@ -9,22 +10,52 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions)
 
     // Admin olmasa bile settings'i okuyabilir (frontend'te store açık mı kontrolü için)
-    const settings = await prisma.storeSettings.findUnique({
-      where: { id: 1 },
-    })
+    let settings
+    try {
+      settings = await prisma.storeSettings.findUnique({
+        where: { id: 1 },
+      })
+    } catch (error: any) {
+      // Cached plan hatası varsa, Prisma client'ı disconnect edip tekrar dene
+      if (error?.code === 'P2023' || error?.message?.includes('cached plan')) {
+        console.log('Prisma cached plan hatası, client yeniden başlatılıyor...')
+        await prisma.$disconnect()
+        // Kısa bir bekleme
+        await new Promise(resolve => setTimeout(resolve, 100))
+        settings = await prisma.storeSettings.findUnique({
+          where: { id: 1 },
+        })
+      } else {
+        throw error
+      }
+    }
 
     // Eğer yoksa default oluştur
     if (!settings) {
+      const defaultFoodCards: Prisma.InputJsonValue = [
+        { name: 'Yemeksepeti Kartı', imageUrl: null, isActive: true },
+        { name: 'Getir Yemek Kartı', imageUrl: null, isActive: true },
+        { name: 'Trendyol Yemek Kartı', imageUrl: null, isActive: true },
+        { name: 'Migros Yemek Kartı', imageUrl: null, isActive: true }
+      ]
+      
       const newSettings = await prisma.storeSettings.create({
         data: {
           id: 1,
           isOpen: true,
+          acceptedFoodCards: defaultFoodCards,
         },
       })
       return NextResponse.json(newSettings)
     }
 
-    return NextResponse.json(settings)
+    // Prisma JSON tipini düzgün serialize et
+    const response = {
+      ...settings,
+      acceptedFoodCards: settings.acceptedFoodCards || []
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Settings GET error:', error)
     return NextResponse.json(
@@ -45,7 +76,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { isOpen, deliveryStatus } = body
+    const { isOpen, deliveryStatus, acceptedFoodCards } = body
 
     // Validation
     if (isOpen !== undefined && typeof isOpen !== 'boolean') {
@@ -62,10 +93,29 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    if (acceptedFoodCards !== undefined && !Array.isArray(acceptedFoodCards)) {
+      return NextResponse.json(
+        { error: 'acceptedFoodCards bir array olmalıdır' },
+        { status: 400 }
+      )
+    }
+
     // Update data objesi oluştur
     const updateData: any = {}
     if (isOpen !== undefined) updateData.isOpen = isOpen
     if (deliveryStatus !== undefined) updateData.deliveryStatus = deliveryStatus
+    if (acceptedFoodCards !== undefined) {
+      // Prisma JSON tipi için Prisma.JsonValue kullan
+      updateData.acceptedFoodCards = acceptedFoodCards as Prisma.InputJsonValue
+    }
+
+    // Default food cards
+    const defaultFoodCards: Prisma.InputJsonValue = [
+      { name: 'Yemeksepeti Kartı', imageUrl: null, isActive: true },
+      { name: 'Getir Yemek Kartı', imageUrl: null, isActive: true },
+      { name: 'Trendyol Yemek Kartı', imageUrl: null, isActive: true },
+      { name: 'Migros Yemek Kartı', imageUrl: null, isActive: true }
+    ]
 
     const settings = await prisma.storeSettings.upsert({
       where: { id: 1 },
@@ -74,6 +124,7 @@ export async function PUT(request: NextRequest) {
         id: 1,
         isOpen: isOpen !== undefined ? isOpen : true,
         deliveryStatus: deliveryStatus || 'normal',
+        acceptedFoodCards: acceptedFoodCards ? (acceptedFoodCards as Prisma.InputJsonValue) : defaultFoodCards,
       },
     })
 
@@ -88,6 +139,8 @@ export async function PUT(request: NextRequest) {
         very_busy: 'Çok yoğun teslimat (~1 saat) 🚨',
       }
       message = statusMap[deliveryStatus]
+    } else if (acceptedFoodCards !== undefined) {
+      message = `Yemek kartları güncellendi (${acceptedFoodCards.length} kart) ✅`
     }
 
     return NextResponse.json({
