@@ -55,25 +55,6 @@ Highway Burger, müşterilerin online sipariş vermesini sağlayan, admin paneli
 - 🖼️ Cloudinary ile görsel yükleme
 - 🗺️ Teslimat konum görüntüleme
 
-## 🚀 Kurulum
-
-```bash
-# Bağımlılıkları yükle
-npm install --legacy-peer-deps
-
-# Environment variables ayarla
-# .env.local dosyası oluştur
-
-# Database migration
-npx prisma migrate dev
-
-# Seed data ekle
-npx tsx prisma/seed.ts
-
-# Geliştirme sunucusunu başlat
-npm run dev
-```
-
 ## 📄 Lisans
 
 Bu proje Highway Burger için özel olarak geliştirilmiştir.
