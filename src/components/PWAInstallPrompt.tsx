@@ -17,7 +17,14 @@ export default function PWAInstallPrompt() {
   const [hintVisible, setHintVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
 
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
+  const isAndroid = /android/i.test(ua)
+  const isIOS = /iphone|ipad|ipod/i.test(ua)
+  const isMobileDevice = isAndroid || isIOS || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 1)
+
   useEffect(() => {
+    if (!isMobileDevice) return
+
     const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator as any).standalone
 
     // Dismiss cool-down kontrolü
@@ -38,6 +45,7 @@ export default function PWAInstallPrompt() {
 
     const onBeforeInstall = (e: Event) => {
       e.preventDefault()
+      if (!isMobileDevice) return
       setDeferredPrompt(e as DeferredPromptEvent)
       setVisible(true)
     }
@@ -50,8 +58,6 @@ export default function PWAInstallPrompt() {
     })
 
     // Android fallback hint: if event doesn't arrive shortly, show instructions banner
-    const ua = navigator.userAgent || ''
-    const isAndroid = /android/i.test(ua)
     const timer = window.setTimeout(() => {
       if (!deferredPrompt && isAndroid) {
         setHintVisible(true)
@@ -108,11 +114,8 @@ export default function PWAInstallPrompt() {
     }
   }, [visible])
 
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
-  const isAndroid = /android/i.test(ua)
+  if (!isMobileDevice) return null
   if (!visible && !(hintVisible && isAndroid)) return null
-
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
