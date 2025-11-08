@@ -4,7 +4,6 @@ import { SessionProvider } from 'next-auth/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { ToastProvider } from '@/contexts/ToastContext'
-import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import OnlineStatusListener from '@/components/OnlineStatusListener'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -28,7 +27,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           {children}
-          <PWAInstallPrompt />
           <OnlineStatusListener />
         </ToastProvider>
       </QueryClientProvider>
